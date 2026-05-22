@@ -1,0 +1,60 @@
+<section>
+  <h1>SpecPilot AI</h1>
+
+  <p>Pega una oferta, requisito o documento funcional y genera un análisis técnico.</p>
+
+  <textarea
+    [(ngModel)]="text"
+    (ngModelChange)="text.set($event)"
+    placeholder="Introduce el texto a analizar"
+    rows="10"
+  >
+  </textarea>
+
+  <button type="button" (click)="analyze()" [disabled]="loading()">
+    @if (loading()) {
+      Analizando...
+    } @else {
+      Analizar texto
+    }
+  </button>
+
+  @if (error()) {
+    <p class="error">{{ error() }}</p>
+  }
+
+  @if (result()) {
+    <section class="result">
+      <h2>Resumen</h2>
+      <p>{{ result()?.summary }}</p>
+
+      <h2>User stories</h2>
+      <ul>
+        @for (story of result()?.userStories; track story) {
+          <li>{{ story }}</li>
+        }
+      </ul>
+
+      <h2>Tareas técnicas</h2>
+      <ul>
+        @for (task of result()?.technicalTasks; track task) {
+          <li>{{ task }}</li>
+        }
+      </ul>
+
+      <h2>Riesgos</h2>
+      <ul>
+        @for (risk of result()?.risks; track risk) {
+          <li>{{ risk }}</li>
+        }
+      </ul>
+
+      <h2>Preguntas</h2>
+      <ul>
+        @for (question of result()?.questions; track question) {
+          <li>{{ question }}</li>
+        }
+      </ul>
+    </section>
+  }
+</section>
