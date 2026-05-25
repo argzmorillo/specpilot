@@ -2,53 +2,65 @@ name: CI
 
 on:
   push:
-    branches: [main, dev]
+    branches: [main]
   pull_request:
-    branches: [main, dev]
+    branches: [main]
 
 jobs:
   backend:
+    name: Backend CI
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v6
+    defaults:
+      run:
+        working-directory: backend
 
-      - uses: actions/setup-node@v6
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
-      - name: Install root dependencies
+      - name: Install backend dependencies
         run: npm ci
 
       - name: Lint backend
         run: npm run lint
-        working-directory: backend
 
       - name: Test backend
         run: npm run test
-        working-directory: backend
 
       - name: Test backend e2e
         run: npm run test:e2e
-        working-directory: backend
 
       - name: Build backend
         run: npm run build
-        working-directory: backend
 
   frontend:
+    name: Frontend CI
     runs-on: ubuntu-latest
 
-    steps:
-      - uses: actions/checkout@v6
+    defaults:
+      run:
+        working-directory: frontend
 
-      - uses: actions/setup-node@v6
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v6
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v6
         with:
           node-version: 22
 
-      - name: Install root dependencies
+      - name: Install frontend dependencies
         run: npm ci
+
+      - name: Test frontend
+        run: npm run test -- --watch=false --browsers=ChromeHeadless
 
       - name: Build frontend
         run: npm run build
-        working-directory: frontend
