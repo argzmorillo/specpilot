@@ -1,4 +1,4 @@
-import { Component, inject, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { AnalysisService } from '../../services/analysis.service';
 import { AnalyzeResult } from '../../models/analyze-result.model';
 import { FormsModule } from '@angular/forms';
@@ -11,6 +11,7 @@ import { FormsModule } from '@angular/forms';
 })
 export class AnalysisPageComponent {
   private readonly analysisService = inject(AnalysisService);
+  readonly maxInputLength = 10000;
 
   text = signal('');
   result = signal<AnalyzeResult | null>(null);
@@ -38,4 +39,14 @@ export class AnalysisPageComponent {
       },
     });
   }
+
+  readonly inputLength = computed(() => this.text().length);
+
+  readonly isInputEmpty = computed(() => !this.text().trim());
+
+  readonly isInputTooLong = computed(() => this.inputLength() > this.maxInputLength);
+
+  readonly isAnalyzeDisabled = computed(
+    () => this.isInputEmpty() || this.isInputTooLong() || this.loading(),
+  );
 }
