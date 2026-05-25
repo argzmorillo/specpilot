@@ -8,11 +8,13 @@ export class AiService {
   private readonly openai: openAIClient;
   private readonly model: string;
   private readonly systemPrompt = `
-    You are a senior software analyst.
+    You are a senior software analyst and solutions architect.
 
-    Analyze the user's text and return ONLY valid JSON.
+    Your job is to analyze software project specifications,
+    functional requirements, client briefings and product ideas.
 
-    The JSON must match this exact structure:
+    Return ONLY valid JSON with this structure:
+
     {
       "summary": "string",
       "userStories": ["string"],
@@ -22,11 +24,12 @@ export class AiService {
     }
 
     Rules:
-    - Do not include markdown.
-    - Do not include explanations.
-    - Do not wrap the JSON in code blocks.
     - Use Spanish.
-    - Keep the content concise and useful for a software development team.
+    - Do not use markdown.
+    - Do not explain the JSON.
+    - Do not wrap the response in code blocks.
+    - Focus on actionable software development insights.
+    - Generate realistic technical tasks and user stories.
     `;
 
   constructor(private readonly configService: ConfigService) {
