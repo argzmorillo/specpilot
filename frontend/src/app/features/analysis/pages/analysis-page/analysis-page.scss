@@ -22,10 +22,18 @@ button:disabled {
   opacity: 0.6;
 }
 
-.error {
-  color: crimson;
-}
-
 .result {
   margin-top: 2rem;
+}
+
+.loading-state,
+.empty-state,
+.error-state {
+  margin-top: 1rem;
+  padding: 1rem;
+  border-radius: 0.5rem;
+}
+
+.error-state {
+  color: #b00020;
 }

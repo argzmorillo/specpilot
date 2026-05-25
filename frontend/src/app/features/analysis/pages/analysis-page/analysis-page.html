@@ -1,29 +1,52 @@
 <section>
   <h1>SpecPilot AI</h1>
 
-  <p>Pega una oferta, requisito o documento funcional y genera un análisis técnico.</p>
+  <p>
+    Convierte especificaciones, requisitos y documentos funcionales en artefactos técnicos listos
+    para desarrollo.
+  </p>
+  <p class="description">
+    Analiza briefings, requisitos y documentos funcionales para generar resúmenes técnicos, user
+    stories, tareas de desarrollo, riesgos y preguntas abiertas.
+  </p>
 
   <textarea
     [(ngModel)]="text"
     (ngModelChange)="text.set($event)"
-    placeholder="Introduce el texto a analizar"
+    [maxlength]="maxInputLength"
+    placeholder="Pega aquí una especificación funcional, briefing o descripción de proyecto..."
     rows="10"
   >
   </textarea>
+  <div class="input-meta">
+    <span> {{ inputLength() }} / {{ maxInputLength }} caracteres </span>
 
-  <button type="button" (click)="analyze()" [disabled]="loading()">
+    @if (isInputTooLong()) {
+      <span class="error-state"> La especificación supera el límite permitido. </span>
+    }
+  </div>
+
+  <button type="button" (click)="analyze()" [disabled]="isAnalyzeDisabled()">
     @if (loading()) {
-      Analizando...
+      Generando análisis técnico...
     } @else {
-      Analizar texto
+      Generar análisis técnico
     }
   </button>
 
-  @if (error()) {
-    <p class="error">{{ error() }}</p>
+  @if (loading()) {
+    <section class="loading-state" aria-live="polite">
+      <p>Estamos analizando la especificación y generando los artefactos técnicos...</p>
+    </section>
   }
 
-  @if (result()) {
+  @if (error()) {
+    <section class="error-state" aria-live="assertive">
+      <p>{{ error() }}</p>
+    </section>
+  }
+
+  @if (result() && !loading() && !error()) {
     <section class="result">
       <h2>Resumen</h2>
       <p>{{ result()?.summary }}</p>
@@ -49,12 +72,23 @@
         }
       </ul>
 
-      <h2>Preguntas</h2>
+      <h2>Preguntas abiertas</h2>
       <ul>
         @for (question of result()?.questions; track question) {
           <li>{{ question }}</li>
         }
       </ul>
+    </section>
+  }
+
+  @if (!result() && !loading() && !error()) {
+    <section class="empty-state">
+      <h2>Análisis técnico</h2>
+
+      <p>
+        Genera un análisis técnico para visualizar user stories, tareas técnicas, riesgos y
+        preguntas abiertas.
+      </p>
     </section>
   }
 </section>
