@@ -19,10 +19,21 @@ export class AnalysisPageComponent {
   error = signal<string | null>(null);
 
   analyze(): void {
-    if (!this.text().trim()) {
-      this.error.set('Introduzca un texto para analizar');
+    if (this.isInputEmpty()) {
+      this.error.set('Introduce una especificación para generar el análisis técnico.');
+      this.result.set(null);
       return;
     }
+
+    if (this.isInputTooLong()) {
+      this.error.set(`La especificación supera el límite de ${this.maxInputLength} caracteres.`);
+      this.result.set(null);
+      return;
+    }
+    // if (!this.text().trim()) {
+    //   this.error.set('Introduzca un texto para analizar');
+    //   return;
+    // }
 
     this.loading.set(true);
     this.error.set(null);
@@ -34,7 +45,9 @@ export class AnalysisPageComponent {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('No se pudo generar el análisis técnico. Inténtalo de nuevo.');
+        this.error.set(
+          'No se pudo generar el análisis técnico. Revisa la especificación o inténtalo de nuevo en unos segundos.',
+        );
         this.loading.set(false);
       },
     });

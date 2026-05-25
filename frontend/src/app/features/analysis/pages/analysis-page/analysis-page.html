@@ -22,7 +22,7 @@
     <span> {{ inputLength() }} / {{ maxInputLength }} caracteres </span>
 
     @if (isInputTooLong()) {
-      <span class="error"> La especificación supera el límite permitido. </span>
+      <span class="error-state"> La especificación supera el límite permitido. </span>
     }
   </div>
 
@@ -34,11 +34,19 @@
     }
   </button>
 
-  @if (error()) {
-    <p class="error">{{ error() }}</p>
+  @if (loading()) {
+    <section class="loading-state" aria-live="polite">
+      <p>Estamos analizando la especificación y generando los artefactos técnicos...</p>
+    </section>
   }
 
-  @if (result()) {
+  @if (error()) {
+    <section class="error-state" aria-live="assertive">
+      <p>{{ error() }}</p>
+    </section>
+  }
+
+  @if (result() && !loading() && !error()) {
     <section class="result">
       <h2>Resumen</h2>
       <p>{{ result()?.summary }}</p>
