@@ -13,12 +13,20 @@
   <textarea
     [(ngModel)]="text"
     (ngModelChange)="text.set($event)"
+    [maxlength]="maxInputLength"
     placeholder="Pega aquí una especificación funcional, briefing o descripción de proyecto..."
     rows="10"
   >
   </textarea>
+  <div class="input-meta">
+    <span> {{ inputLength() }} / {{ maxInputLength }} caracteres </span>
 
-  <button type="button" (click)="analyze()" [disabled]="loading()">
+    @if (isInputTooLong()) {
+      <span class="error"> La especificación supera el límite permitido. </span>
+    }
+  </div>
+
+  <button type="button" (click)="analyze()" [disabled]="isAnalyzeDisabled()">
     @if (loading()) {
       Generando análisis técnico...
     } @else {
