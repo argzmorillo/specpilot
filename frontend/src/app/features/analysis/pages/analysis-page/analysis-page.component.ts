@@ -33,7 +33,7 @@ export class AnalysisPageComponent {
         this.loading.set(false);
       },
       error: () => {
-        this.error.set('Error al analizar el texto');
+        this.error.set('No se pudo generar el análisis técnico. Inténtalo de nuevo.');
         this.loading.set(false);
       },
     });
