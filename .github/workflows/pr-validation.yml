@@ -12,7 +12,7 @@ jobs:
     steps:
       - name: Ensure PR comes from dev
         run: |
-          if [ "${{ github.head_ref }}" != "dev" ]; then
+          if [ "${{ github.head_ref }}" != "develop" ]; then
             echo "Only pull requests from dev to main are allowed."
             exit 1
           fi
