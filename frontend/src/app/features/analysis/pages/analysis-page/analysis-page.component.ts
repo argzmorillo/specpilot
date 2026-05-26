@@ -7,7 +7,7 @@ import { FormsModule } from '@angular/forms';
   selector: 'app-analysis-page',
   imports: [FormsModule],
   templateUrl: './analysis-page.html',
-  styleUrl: './analysis-page.scss',
+  styleUrl: './analysis-page.css',
 })
 export class AnalysisPageComponent {
   private readonly analysisService = inject(AnalysisService);
@@ -51,6 +51,12 @@ export class AnalysisPageComponent {
         this.loading.set(false);
       },
     });
+  }
+
+  clearInput(): void {
+    this.text.set('');
+    this.result.set(null);
+    this.error.set(null);
   }
 
   readonly inputLength = computed(() => this.text().length);

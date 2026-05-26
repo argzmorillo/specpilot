@@ -1,94 +1,313 @@
-<section>
-  <h1>SpecPilot AI</h1>
-
-  <p>
-    Convierte especificaciones, requisitos y documentos funcionales en artefactos técnicos listos
-    para desarrollo.
-  </p>
-  <p class="description">
-    Analiza briefings, requisitos y documentos funcionales para generar resúmenes técnicos, user
-    stories, tareas de desarrollo, riesgos y preguntas abiertas.
-  </p>
-
-  <textarea
-    [(ngModel)]="text"
-    (ngModelChange)="text.set($event)"
-    [maxlength]="maxInputLength"
-    placeholder="Pega aquí una especificación funcional, briefing o descripción de proyecto..."
-    rows="10"
+<div class="min-h-screen bg-[#F5F7FB] text-slate-900">
+  <aside
+    class="hidden lg:fixed lg:left-0 lg:top-0 lg:flex lg:h-screen w-[260px] lg:flex-col lg:justify-between lg:bg-[#081220] lg:px-6 lg:py-8 lg:text-white lg:shadow-2xl"
   >
-  </textarea>
-  <div class="input-meta">
-    <span> {{ inputLength() }} / {{ maxInputLength }} caracteres </span>
+    <div>
+      <div class="mb-12 flex items-center gap-3">
+        <div
+          class="flex h-11 w-11 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-violet-500 text-lg font-bold"
+        >
+          ◆
+        </div>
 
-    @if (isInputTooLong()) {
-      <span class="error-state"> La especificación supera el límite permitido. </span>
-    }
-  </div>
+        <div>
+          <p class="text-xl font-semibold">SpecPilot AI</p>
+        </div>
+      </div>
 
-  <button type="button" (click)="analyze()" [disabled]="isAnalyzeDisabled()">
-    @if (loading()) {
-      Generando análisis técnico...
-    } @else {
-      Generar análisis técnico
-    }
-  </button>
+      <nav class="flex flex-col gap-3">
+        <button
+          class="rounded-xl bg-blue-600 px-4 py-3 text-left text-sm font-medium transition hover:bg-blue-500"
+        >
+          Nuevo análisis
+        </button>
 
-  @if (loading()) {
-    <section class="loading-state" aria-live="polite">
-      <p>Estamos analizando la especificación y generando los artefactos técnicos...</p>
-    </section>
-  }
+        <button
+          class="rounded-xl px-4 py-3 text-left text-sm text-slate-300 transition hover:bg-white/10"
+        >
+          Historial
+        </button>
+      </nav>
+    </div>
 
-  @if (error()) {
-    <section class="error-state" aria-live="assertive">
-      <p>{{ error() }}</p>
-    </section>
-  }
+    <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
+      <p class="text-sm font-medium">Portfolio Ecosystem</p>
+      <p class="mt-1 text-xs text-slate-400">Shared authentication & microservices architecture</p>
+    </div>
+  </aside>
 
-  @if (result() && !loading() && !error()) {
-    <section class="result">
-      <h2>Resumen</h2>
-      <p>{{ result()?.summary }}</p>
+  <main class="min-h-screen p-5 lg:ml-[260px] lg:p-10">
+    <header class="mb-8">
+      <h1 class="text-4xl font-bold tracking-tight text-slate-900">Nuevo análisis técnico</h1>
 
-      <h2>User stories</h2>
-      <ul>
-        @for (story of result()?.userStories; track story) {
-          <li>{{ story }}</li>
-        }
-      </ul>
-
-      <h2>Tareas técnicas</h2>
-      <ul>
-        @for (task of result()?.technicalTasks; track task) {
-          <li>{{ task }}</li>
-        }
-      </ul>
-
-      <h2>Riesgos</h2>
-      <ul>
-        @for (risk of result()?.risks; track risk) {
-          <li>{{ risk }}</li>
-        }
-      </ul>
-
-      <h2>Preguntas abiertas</h2>
-      <ul>
-        @for (question of result()?.questions; track question) {
-          <li>{{ question }}</li>
-        }
-      </ul>
-    </section>
-  }
-
-  @if (!result() && !loading() && !error()) {
-    <section class="empty-state">
-      <h2>Análisis técnico</h2>
-
-      <p>
-        Genera un análisis técnico para visualizar user stories, tareas técnicas, riesgos y
-        preguntas abiertas.
+      <p class="mt-3 max-w-3xl text-base leading-relaxed text-slate-500">
+        Convierte especificaciones, requisitos y documentos funcionales en artefactos técnicos
+        listos para desarrollo.
       </p>
+    </header>
+
+    <section class="rounded-3xl border border-slate-200 bg-white p-8 shadow-sm">
+      <label for="specification">
+        Pega aquí la especificación funcional, briefing o descripción del proyecto
+      </label>
+
+      <textarea
+        id="specification"
+        [(ngModel)]="text"
+        (ngModelChange)="text.set($event)"
+        [maxLength]="maxInputLength"
+        placeholder="Escribe o pega aquí el contenido a analizar..."
+        rows="8"
+        class="mt-4 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white"
+      ></textarea>
+
+      <div class="mt-4 flex items-center justify-between gap-4">
+        <span class="text-sm text-slate-500">
+          {{ inputLength() }} / {{ maxInputLength }} caracteres
+        </span>
+
+        <div class="flex items-center gap-3">
+          <button
+            type="button"
+            (click)="clearInput()"
+            class="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
+          >
+            Limpiar
+          </button>
+
+          <button
+            type="button"
+            (click)="analyze()"
+            [disabled]="isAnalyzeDisabled()"
+            class="rounded-xl bg-[#2563EB] px-6 py-3 text-sm font-semibold text-white shadow-sm transition hover:bg-[#1E3A8A] disabled:cursor-not-allowed disabled:bg-slate-300"
+          >
+            @if (loading()) {
+              Generando análisis...
+            } @else {
+              Generar análisis técnico
+            }
+          </button>
+        </div>
+      </div>
     </section>
-  }
-</section>
+
+    @if (loading()) {
+      <section class="state-card">
+        <p>Estamos analizando la especificación y generando los artefactos técnicos.</p>
+      </section>
+    }
+
+    @if (error()) {
+      <section class="state-card error-state">
+        <p>{{ error() }}</p>
+      </section>
+    }
+
+    @if (!result() && !loading() && !error()) {
+      <section class="state-card empty-state">
+        <h2>Análisis técnico</h2>
+        <p>
+          Genera un análisis técnico para visualizar resumen, user stories, tareas técnicas, riesgos
+          y preguntas abiertas.
+        </p>
+      </section>
+    }
+
+    @if (result() && !loading()) {
+      <section class="mt-10 mb-5 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <h2 class="text-lg font-semibold text-slate-900">Análisis generado</h2>
+          <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
+            Completado
+          </span>
+        </div>
+
+        <button
+          type="button"
+          class="rounded-xl border border-slate-200 bg-white px-5 py-3 text-sm font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
+          (click)="clearInput()"
+        >
+          Nuevo análisis
+        </button>
+      </section>
+
+      <section class="grid gap-5 lg:grid-cols-2">
+        <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm min-h-[190px]:">
+          <div class="mb-4 flex items-center gap-3">
+            <div
+              class="flex h-9 w-9 items-center justify-center rounded-xl bg-violet-400 text-white"
+            >
+              ✦
+            </div>
+
+            <h3 class="text-base font-semibold text-slate-900">Resumen técnico</h3>
+          </div>
+
+          <p class="text-sm leading-6 text-slate-600">
+            {{ result()?.summary }}
+          </p>
+        </article>
+
+        <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex h-9 w-9 items-center justify-center rounded-xl bg-emerald-400 text-white"
+              >
+                ✦
+              </div>
+
+              <h3 class="text-base font-semibold text-slate-900">User stories</h3>
+            </div>
+
+            <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+              {{ result()?.userStories?.length ?? 0 }}
+            </span>
+          </div>
+
+          @if (result()?.userStories?.length) {
+            <ul class="space-y-2 text-sm leading-6 text-slate-600">
+              @for (story of result()?.userStories?.slice(0, 3); track story) {
+                <li class="flex gap-2">
+                  <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
+                  <span>{{ story }}</span>
+                </li>
+              }
+            </ul>
+
+            @if ((result()?.userStories?.length ?? 0) > 3) {
+              <button
+                type="button"
+                class="mt-4 text-sm font-medium text-blue-600 hover:text-blue-700"
+              >
+                Ver todas
+              </button>
+            }
+          } @else {
+            <p class="text-sm text-slate-500">No se detectaron user stories.</p>
+          }
+        </article>
+
+        <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex h-9 w-9 items-center justify-center rounded-xl bg-blue-300 text-white"
+              >
+                ✦
+              </div>
+
+              <h3 class="text-base font-semibold text-slate-900">Tareas técnicas</h3>
+            </div>
+
+            <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+              {{ result()?.technicalTasks?.length ?? 0 }}
+            </span>
+          </div>
+
+          @if (result()?.technicalTasks?.length) {
+            <ul class="space-y-2 text-sm leading-6 text-slate-600">
+              @for (task of result()?.technicalTasks?.slice(0, 3); track task) {
+                <li class="flex gap-2">
+                  <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
+                  <span>{{ task }}</span>
+                </li>
+              }
+            </ul>
+
+            @if ((result()?.technicalTasks?.length ?? 0) > 3) {
+              <button
+                type="button"
+                class="mt-4 text-sm font-medium text-blue-600 hover:text-blue-700"
+              >
+                Ver todas
+              </button>
+            }
+          } @else {
+            <p class="text-sm text-slate-500">No se generaron tareas técnicas.</p>
+          }
+        </article>
+
+        <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex h-9 w-9 items-center justify-center rounded-xl bg-orange-400 text-white"
+              >
+                ✦
+              </div>
+
+              <h3 class="text-base font-semibold text-slate-900">Riesgos detectados</h3>
+            </div>
+
+            <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+              {{ result()?.risks?.length ?? 0 }}
+            </span>
+          </div>
+
+          @if (result()?.risks?.length) {
+            <ul class="space-y-2 text-sm leading-6 text-slate-600">
+              @for (risk of result()?.risks?.slice(0, 3); track risk) {
+                <li class="flex gap-2">
+                  <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
+                  <span>{{ risk }}</span>
+                </li>
+              }
+            </ul>
+
+            @if ((result()?.risks?.length ?? 0) > 3) {
+              <button
+                type="button"
+                class="mt-4 text-sm font-medium text-blue-600 hover:text-blue-700"
+              >
+                Ver todas
+              </button>
+            }
+          } @else {
+            <p class="text-sm text-slate-500">No se detectaron riesgos.</p>
+          }
+        </article>
+
+        <article class="rounded-2xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
+          <div class="mb-4 flex items-center justify-between gap-3">
+            <div class="flex items-center gap-3">
+              <div
+                class="flex h-9 w-9 items-center justify-center rounded-xl bg-amber-300 text-white"
+              >
+                ✦
+              </div>
+
+              <h3 class="text-base font-semibold text-slate-900">Preguntas abiertas</h3>
+            </div>
+
+            <span class="rounded-full bg-slate-100 px-2.5 py-1 text-xs font-medium text-slate-600">
+              {{ result()?.questions?.length ?? 0 }}
+            </span>
+          </div>
+
+          @if (result()?.questions?.length) {
+            <ul class="space-y-2 text-sm leading-6 text-slate-600">
+              @for (question of result()?.questions?.slice(0, 3); track question) {
+                <li class="flex gap-2">
+                  <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-slate-400"></span>
+                  <span>{{ question }}</span>
+                </li>
+              }
+            </ul>
+
+            @if ((result()?.questions?.length ?? 0) > 3) {
+              <button
+                type="button"
+                class="mt-4 text-sm font-medium text-blue-600 hover:text-blue-700"
+              >
+                Ver todas
+              </button>
+            }
+          } @else {
+            <p class="text-sm text-slate-500">No se generaron preguntas abiertas.</p>
+          }
+        </article>
+      </section>
+    }
+  </main>
+</div>
