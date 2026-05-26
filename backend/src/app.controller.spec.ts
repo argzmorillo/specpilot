@@ -1,16 +1,21 @@
-import { TestBed } from '@angular/core/testing';
+import type { TestingModule } from '@nestjs/testing';
+import { Test } from '@nestjs/testing';
 import { AppController } from './app.controller';
+import { AppService } from './app.service';
 
 describe('AppController', () => {
+  let appController: AppController;
+
   beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AppController],
-    }).compileComponents();
+    const app: TestingModule = await Test.createTestingModule({
+      controllers: [AppController],
+      providers: [AppService],
+    }).compile();
+
+    appController = app.get<AppController>(AppController);
   });
 
-  it('should create the app', () => {
-    const fixture = TestBed.createComponent(AppController);
-    const app = fixture.componentInstance;
-    expect(app).toBeTruthy();
+  it('should be defined', () => {
+    expect(appController).toBeDefined();
   });
 });
