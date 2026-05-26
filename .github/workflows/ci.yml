@@ -29,9 +29,11 @@ jobs:
 
       - name: Test backend
         run: npm run test
+        working-directory: backend
 
       - name: Test backend e2e
         run: npm run test:e2e
+        working-directory: backend
 
       - name: Build backend
         run: npm run build
