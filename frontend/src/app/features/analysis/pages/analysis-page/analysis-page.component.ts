@@ -2,16 +2,34 @@ import { Component, computed, inject, signal } from '@angular/core';
 import { AnalysisService } from '../../services/analysis.service';
 import { AnalyzeResult } from '../../models/analyze-result.model';
 import { FormsModule } from '@angular/forms';
+import { ListCardComponent } from '../../../../shared/components/list-card.component/list-card.component';
+import { SummaryCardComponent } from '../../../../shared/components/summary-card.component/summary-card.component';
+import { ButtonComponent } from '../../../../shared/components/button.component/button.component';
+import { LucideAngularModule, Eraser, RotateCcw } from 'lucide-angular';
+import { FileText, BookOpen, ListChecks, TriangleAlert } from 'lucide-angular';
 
 @Component({
   selector: 'app-analysis-page',
-  imports: [FormsModule],
+  imports: [
+    FormsModule,
+    SummaryCardComponent,
+    ListCardComponent,
+    LucideAngularModule,
+    ButtonComponent,
+  ],
   templateUrl: './analysis-page.html',
   styleUrl: './analysis-page.css',
 })
 export class AnalysisPageComponent {
   private readonly analysisService = inject(AnalysisService);
   readonly maxInputLength = 10000;
+
+  readonly fileTextIcon = FileText;
+  readonly bookOpenIcon = BookOpen;
+  readonly listChecksIcon = ListChecks;
+  readonly triangleAlertIcon = TriangleAlert;
+  readonly eraserIcon = Eraser;
+  readonly rotateCcwIcon = RotateCcw;
 
   text = signal('');
   result = signal<AnalyzeResult | null>(null);
@@ -30,10 +48,6 @@ export class AnalysisPageComponent {
       this.result.set(null);
       return;
     }
-    // if (!this.text().trim()) {
-    //   this.error.set('Introduzca un texto para analizar');
-    //   return;
-    // }
 
     this.loading.set(true);
     this.error.set(null);
