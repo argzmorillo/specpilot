@@ -3,6 +3,7 @@
 SpecPilot AI is an AI-assisted software specification analysis platform designed to transform functional briefings, requirements and product documentation into structured technical outputs for development teams.
 
 The platform generates:
+
 - Technical summaries
 - User stories
 - Technical implementation tasks
@@ -16,6 +17,7 @@ SpecPilot AI is the first application of a broader portfolio ecosystem featuring
 ## Current Architecture
 
 ### Frontend
+
 - Angular 20
 - Standalone components
 - Signals API
@@ -23,6 +25,7 @@ SpecPilot AI is the first application of a broader portfolio ecosystem featuring
 - Responsive UI foundation
 
 ### Backend
+
 - NestJS
 - REST API architecture
 - DTO validation with class-validator
@@ -30,13 +33,78 @@ SpecPilot AI is the first application of a broader portfolio ecosystem featuring
 - Modular backend structure
 
 ### AI Integration
+
 SpecPilot uses OpenAI models to analyze software specifications and generate structured development-oriented outputs.
 
 The AI layer is isolated inside a dedicated backend service to allow:
+
 - Future provider abstraction
 - Prompt specialization
 - Safer testing/mocking strategies
 - Centralized AI orchestration
+
+---
+
+## Local Development & Database
+
+SpecPilot AI uses PostgreSQL + Prisma as the persistence layer foundation for future analysis history, usage tracking and user-related features.
+
+### Local PostgreSQL Setup
+
+Start the local PostgreSQL container using Docker:
+
+```bash
+docker compose up -d
+```
+
+The database is exposed locally on port `5432`.
+
+---
+
+### Run Prisma Migrations
+
+From the backend folder:
+
+```bash
+cd backend
+npx prisma migrate dev
+```
+
+This command:
+
+- Applies pending migrations
+- Synchronizes the local database schema
+- Generates the Prisma client automatically
+
+---
+
+### Generate Prisma Client Manually
+
+If needed, the Prisma client can be regenerated manually:
+
+```bash
+npx prisma generate
+```
+
+---
+
+### Open Prisma Studio
+
+Prisma Studio provides a visual interface for inspecting and editing database records during development.
+
+From the backend folder:
+
+```bash
+npm run prisma:studio
+```
+
+---
+
+### CI Compatibility
+
+Current CI pipelines do not require a running PostgreSQL instance.
+
+Database integration has been prepared incrementally to keep automated tests isolated and stable during development.
 
 ---
 
@@ -73,6 +141,7 @@ Real OpenAI integration is tested manually during local development using a vali
 SpecPilot is being developed as part of a larger portfolio ecosystem designed to simulate real-world enterprise architecture patterns.
 
 Planned ecosystem features include:
+
 - Shared authentication service
 - Role and access management
 - Multiple interconnected applications
@@ -83,6 +152,7 @@ Planned ecosystem features include:
 - Observability and monitoring
 
 Future applications may use different stacks including:
+
 - Angular
 - Vue
 - React
@@ -95,6 +165,7 @@ Future applications may use different stacks including:
 ## Current Status
 
 Current stage:
+
 - Functional MVP
 - Frontend/backend communication working
 - AI analysis flow operational
@@ -107,21 +178,25 @@ Current stage:
 ## Roadmap
 
 ### v0.2 — Product Specialization & UX
+
 - Improve specification-focused prompting
 - Improve UX/UI structure
 - Stabilize testing strategy
 
 ### v0.3 — Authentication & Access Design
+
 - Shared authentication architecture
 - Access request flow
 - Protected applications
 
 ### v0.4 — Deployable Private Demo
+
 - Cloud deployment
 - Production-ready environment setup
 - Private access management
 
 ### v1.0 — Portfolio Ecosystem Demo
+
 - Shared auth ecosystem
 - Multiple interconnected apps
 - Centralized access control
