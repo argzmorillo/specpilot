@@ -183,13 +183,21 @@ Current stage:
 - Improve UX/UI structure
 - Stabilize testing strategy
 
-### v0.3 — Authentication & Access Design
+### v0.3 — Persistence & Analysis History
+
+- PostgreSQL integration
+- Prisma ORM integration
+- Analysis persistence
+- Historical analysis retrieval
+- Usage tracking foundation
+
+### v0.4 — Authentication & Access Design
 
 - Shared authentication architecture
 - Access request flow
 - Protected applications
 
-### v0.4 — Deployable Private Demo
+### v0.5 — Deployable Private Demo
 
 - Cloud deployment
 - Production-ready environment setup
@@ -201,3 +209,7 @@ Current stage:
 - Multiple interconnected apps
 - Centralized access control
 - Full portfolio integration
+
+```
+
+```
