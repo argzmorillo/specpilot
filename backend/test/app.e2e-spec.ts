@@ -7,6 +7,7 @@ import request from 'supertest';
 import type { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 import { AiService } from '../src/ai/ai.service';
+import { PrismaService } from '../src/prisma/prisma.service';
 
 const mockAnalayzeResult = {
   summary: 'Fake summary',
@@ -29,6 +30,11 @@ describe('AppController (e2e)', () => {
     })
       .overrideProvider(AiService)
       .useValue(mockAiService)
+      .overrideProvider(PrismaService)
+      .useValue({
+        $connect: jest.fn(),
+        $disconnect: jest.fn(),
+      })
       .compile();
 
     app = moduleFixture.createNestApplication();

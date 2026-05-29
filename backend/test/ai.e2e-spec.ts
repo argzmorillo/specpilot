@@ -5,6 +5,7 @@ import type { TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import request from 'supertest';
 import { AiService } from '../src/ai/ai.service';
+import { PrismaService } from '../src/prisma/prisma.service';
 
 describe('AiController (e2e)', () => {
   let app: INestApplication;
@@ -30,6 +31,11 @@ describe('AiController (e2e)', () => {
     })
       .overrideProvider(AiService)
       .useValue(mockAiService)
+      .overrideProvider(PrismaService)
+      .useValue({
+        $connect: jest.fn(),
+        $disconnect: jest.fn(),
+      })
       .compile();
 
     app = moduleFixture.createNestApplication();

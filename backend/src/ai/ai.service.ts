@@ -2,6 +2,7 @@ import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import openAIClient from 'openai';
 import { AnalyzeResult } from './types/analyze-result.type';
+import { AnalysisRepository } from '../analysis/analysis.repository';
 
 @Injectable()
 export class AiService {
@@ -37,7 +38,10 @@ export class AiService {
     - If the input is not clearly a software specification, still return the same JSON structure, but indicate in the summary that the input does not provide enough software requirements and ask clarifying questions.
   `;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly analysisRepository: AnalysisRepository,
+  ) {
     const apiKey = this.configService.get<string>('OPENAI_API_KEY');
 
     if (!apiKey) {
@@ -68,7 +72,14 @@ export class AiService {
         store: true,
       });
 
-      return this.parseAnalyzeResult(response.output_text);
+      const result = this.parseAnalyzeResult(response.output_text);
+
+      await this.analysisRepository.create({
+        inputText: text,
+        ...result,
+      });
+
+      return result;
     } catch (error) {
       console.error('Error analyzing text:', error);
       throw new InternalServerErrorException('Failed to analyze text');

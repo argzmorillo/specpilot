@@ -2,9 +2,14 @@ import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import { ConfigService } from '@nestjs/config';
 import { AiService } from './ai.service';
+import { AnalysisRepository } from '../analysis/analysis.repository';
 
 describe('AiService', () => {
   let service: AiService;
+
+  const mockAnalysisRepository = {
+    create: jest.fn(),
+  };
 
   beforeEach(async () => {
     const module: TestingModule = await Test.createTestingModule({
@@ -19,6 +24,10 @@ describe('AiService', () => {
               return null;
             }),
           },
+        },
+        {
+          provide: AnalysisRepository,
+          useValue: mockAnalysisRepository,
         },
       ],
     }).compile();
