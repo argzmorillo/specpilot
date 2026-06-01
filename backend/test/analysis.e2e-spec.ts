@@ -5,6 +5,7 @@ import { AppModule } from '../src/app.module';
 import request from 'supertest';
 import { AnalysisService } from '../src/analysis/analysis.service';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { ConfigService } from '@nestjs/config';
 
 describe('AnalysisController (e2e)', () => {
   let app: INestApplication;
@@ -42,6 +43,14 @@ describe('AnalysisController (e2e)', () => {
       .useValue({
         $connect: jest.fn(),
         $disconnect: jest.fn(),
+      })
+      .overrideProvider(ConfigService)
+      .useValue({
+        get: jest.fn((key: string) => {
+          if (key === 'OPENAI_API_KEY') return 'fake-api-key';
+          if (key === 'OPENAI_MODEL') return 'fake-model';
+          return null;
+        }),
       })
       .compile();
 
