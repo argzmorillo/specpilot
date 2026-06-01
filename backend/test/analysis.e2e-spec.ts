@@ -4,6 +4,7 @@ import type { TestingModule } from '@nestjs/testing';
 import { AppModule } from '../src/app.module';
 import request from 'supertest';
 import { AnalysisService } from '../src/analysis/analysis.service';
+import { PrismaService } from '../src/prisma/prisma.service';
 
 describe('AnalysisController (e2e)', () => {
   let app: INestApplication;
@@ -25,13 +26,19 @@ describe('AnalysisController (e2e)', () => {
     findAll: jest.fn().mockResolvedValue(mockAnalysisResponse),
   };
 
+  const mockAiService = {
+    analyzeText: jest.fn(),
+  };
+
   beforeEach(async () => {
     const moduleFixture: TestingModule = await Test.createTestingModule({
       imports: [AppModule],
     })
       .overrideProvider(AnalysisService)
       .useValue(mockAnalysisService)
-      .overrideProvider('PrismaService')
+      .overrideProvider('AiService')
+      .useValue(mockAiService)
+      .overrideProvider(PrismaService)
       .useValue({
         $connect: jest.fn(),
         $disconnect: jest.fn(),
