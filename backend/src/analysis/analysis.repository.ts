@@ -26,4 +26,12 @@ export class AnalysisRepository {
       },
     });
   }
+
+  async findAll() {
+    return this.prisma.analysis.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
 }
