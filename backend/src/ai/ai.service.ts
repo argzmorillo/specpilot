@@ -56,6 +56,7 @@ export class AiService {
   }
 
   async analyzeText(text: string): Promise<AnalyzeResult> {
+    const startedAt = Date.now();
     try {
       const response = await this.openai.responses.create({
         model: this.model,
@@ -72,11 +73,21 @@ export class AiService {
         store: true,
       });
 
+      const requestDurationMs = Date.now() - startedAt;
+
       const result = this.parseAnalyzeResult(response.output_text);
 
       await this.analysisRepository.create({
         inputText: text,
         ...result,
+        requestDurationMs,
+        model: this.model,
+        promptTokens: response.usage?.input_tokens,
+        completionTokens: response.usage?.output_tokens,
+        totalTokens: response.usage?.total_tokens,
+        metadata: {
+          provider: 'openai',
+        },
       });
 
       return result;
