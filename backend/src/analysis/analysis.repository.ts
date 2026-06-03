@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
+import { Prisma, type Analysis } from '@prisma/client';
 
 export interface CreateAnalysisRecordInput {
   inputText: string;
@@ -14,20 +15,13 @@ export interface CreateAnalysisRecordInput {
 export class AnalysisRepository {
   constructor(private readonly prisma: PrismaService) {}
 
-  async create(input: CreateAnalysisRecordInput) {
+  async create(input: Prisma.AnalysisCreateInput): Promise<Analysis> {
     return this.prisma.analysis.create({
-      data: {
-        inputText: input.inputText,
-        summary: input.summary,
-        userStories: input.userStories,
-        technicalTasks: input.technicalTasks,
-        risks: input.risks,
-        questions: input.questions,
-      },
+      data: input,
     });
   }
 
-  async findAll() {
+  async findAll(): Promise<Analysis[]> {
     return this.prisma.analysis.findMany({
       orderBy: {
         createdAt: 'desc',
