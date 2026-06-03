@@ -10,6 +10,7 @@ describe('AnalysisPageComponent', () => {
 
   const mockAnalysisService = {
     analyzeText: jasmine.createSpy('analyzeText'),
+    getHistory: jasmine.createSpy('getHistory').and.returnValue(of([])),
   };
 
   const mockResult = {

@@ -5,7 +5,6 @@ type ButtonVariant = 'primary' | 'secondary';
 
 @Component({
   selector: 'app-button',
-  standalone: true,
   imports: [LucideAngularModule],
   templateUrl: './button.component.html',
   styleUrl: './button.component.css',
