@@ -3,6 +3,7 @@ import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AnalyzeResult } from '../models/analyze-result.model';
 import { environment } from '../../../../environments/environment.dev';
+import { AnalysisHistoryItem } from '../models/analysis-history-item.model';
 
 @Injectable({
   providedIn: 'root',
@@ -12,5 +13,9 @@ export class AnalysisService {
 
   analyzeText(text: string): Observable<AnalyzeResult> {
     return this.http.post<AnalyzeResult>(`${environment.apiUrl}/ai/analyze`, { text });
+  }
+
+  getHistory(): Observable<AnalysisHistoryItem[]> {
+    return this.http.get<AnalysisHistoryItem[]>(`${environment.apiUrl}/analysis`);
   }
 }

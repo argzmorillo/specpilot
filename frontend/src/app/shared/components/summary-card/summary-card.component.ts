@@ -3,7 +3,6 @@ import { LucideAngularModule, LucideIconData } from 'lucide-angular';
 
 @Component({
   selector: 'app-summary-card',
-  standalone: true,
   imports: [LucideAngularModule],
   templateUrl: './summary-card.component.html',
 })

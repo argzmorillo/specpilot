@@ -4,7 +4,6 @@ import { LucideAngularModule, LucideIconData } from 'lucide-angular';
 @Component({
   selector: 'app-list-card',
   imports: [LucideAngularModule],
-  standalone: true,
   templateUrl: './list-card.component.html',
   styleUrl: './list-card.component.css',
 })
