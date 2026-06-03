@@ -32,6 +32,28 @@ SpecPilot AI is the first application of a broader portfolio ecosystem featuring
 - OpenAI integration layer
 - Modular backend structure
 
+### Persistence Architecture
+
+SpecPilot AI uses PostgreSQL and Prisma ORM as the persistence foundation for historical analysis tracking and future ecosystem features.
+
+The persistence layer currently stores:
+
+- Original specification input
+- AI-generated technical outputs
+- Historical analysis records
+- Request duration metadata
+- AI token usage metadata
+- Model/provider metadata
+
+Persistence access is isolated through repository classes to keep business logic decoupled from ORM implementation details.
+
+Current persistence goals:
+
+- Historical analysis retrieval
+- Lightweight AI usage tracking
+- Future authentication integration
+- Extensible domain architecture
+
 ### AI Integration
 
 SpecPilot uses OpenAI models to analyze software specifications and generate structured development-oriented outputs.
@@ -48,6 +70,28 @@ The AI layer is isolated inside a dedicated backend service to allow:
 ## Local Development & Database
 
 SpecPilot AI uses PostgreSQL + Prisma as the persistence layer foundation for future analysis history, usage tracking and user-related features.
+
+## Persistence Flow
+
+```text
+Frontend (Angular)
+        ↓
+REST API (NestJS)
+        ↓
+AI Service
+        ↓
+OpenAI Responses API
+        ↓
+Structured Analysis Result
+        ↓
+AnalysisRepository
+        ↓
+Prisma ORM
+        ↓
+PostgreSQL
+```
+
+The persistence flow is intentionally lightweight during the MVP stage while remaining extensible for future authentication, analytics and multi-application ecosystem integration.
 
 ### Local PostgreSQL Setup
 
@@ -110,13 +154,16 @@ Database integration has been prepared incrementally to keep automated tests iso
 
 ## Current Features
 
-- Specification analysis
-- Structured AI output generation
-- Validation handling
-- Loading and error states
-- Character limit protection
+- AI-powered specification analysis
+- Structured technical artifact generation
+- PostgreSQL persistence layer
+- Historical analysis retrieval
+- Responsive analysis interface
+- Lightweight AI usage tracking
+- Validation and error handling
 - CI pipeline with automated testing
-- Mocked AI testing strategy
+- Mocked OpenAI testing strategy
+- Modular backend architecture
 
 ---
 
@@ -171,7 +218,8 @@ Current stage:
 - AI analysis flow operational
 - CI pipeline configured
 - Automated tests enabled
-- Initial responsive layout in progress
+- Persistence architecture operational
+- Historical analysis tracking enabled
 
 ---
 
