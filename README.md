@@ -152,6 +152,13 @@ Database integration has been prepared incrementally to keep automated tests iso
 
 ---
 
+## Architecture Documentation
+
+Additional architecture decisions and ecosystem documentation can be found inside the `/docs` directory.
+
+Current documentation:
+- Shared authentication architecture
+
 ## Current Features
 
 - AI-powered specification analysis
