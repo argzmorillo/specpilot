@@ -12,5 +12,15 @@ services:
     volumes:
       - specpilot_postgres_data:/var/lib/postgresql/data
 
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.6.3
+    container_name: specpilot-keycloak
+    command: start-dev
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - '8080:8080'
+
 volumes:
   specpilot_postgres_data:

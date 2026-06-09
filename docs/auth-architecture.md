@@ -258,3 +258,70 @@ The long-term goal is to evolve the portfolio ecosystem into a multi-application
 - Modern API security practices
 - Modular application boundaries
 - Scalable authentication architecture
+
+# Local Development Setup
+
+## Docker Infrastructure
+
+The local development environment currently includes:
+
+- PostgreSQL
+- Keycloak
+
+Run local infrastructure:
+
+```bash
+docker compose up -d
+```
+
+---
+
+## Local Services
+
+### PostgreSQL
+
+```text
+localhost:5432
+```
+
+### Keycloak
+
+```text
+http://localhost:8080
+```
+
+---
+
+## Development Credentials
+
+### Keycloak Admin
+
+```text
+admin / admin
+```
+
+---
+
+## Current Realm
+
+```text
+specpilot
+```
+
+---
+
+## Initial Clients
+
+```text
+specpilot-frontend
+specpilot-api
+```
+
+---
+
+## Initial Roles
+
+```text
+specpilot_user
+specpilot_admin
+```
