@@ -11,6 +11,7 @@ import request from 'supertest';
 import { AiService } from '../src/ai/ai.service';
 import { PrismaService } from '../src/prisma/prisma.service';
 import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
+import { ConfigService } from '@nestjs/config';
 
 describe('AiController (e2e)', () => {
   let app: INestApplication;
@@ -39,6 +40,16 @@ describe('AiController (e2e)', () => {
       .useValue({
         $connect: jest.fn(),
         $disconnect: jest.fn(),
+      })
+      .overrideProvider(ConfigService)
+      .useValue({
+        get: jest.fn((key: string) => {
+          if (key === 'KEYCLOAK_ISSUER_URL') return 'http://keycloak-test/realms/specpilot';
+          if (key === 'KEYCLOAK_CLIENT_ID') return 'specpilot-api';
+          if (key === 'OPENAI_API_KEY') return 'fake-api-key';
+          if (key === 'OPENAI_MODEL') return 'fake-model';
+          return null;
+        }),
       })
       .overrideGuard(JwtAuthGuard)
       .useValue({
