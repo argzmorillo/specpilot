@@ -67,8 +67,28 @@
     </div>
   </div>
 
-  <div class="rounded-2xl border border-white/10 bg-white/5 p-4">
-    <p class="text-sm font-medium">Portfolio Ecosystem</p>
-    <p class="mt-1 text-xs text-slate-400">Shared authentication & microservices architecture</p>
+  <div class="border-t border-white/10 pt-5">
+    <div class="mb-4 flex items-center gap-3">
+      <div
+        class="flex h-10 w-10 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-500 text-sm font-semibold text-white"
+      >
+        {{ userInitial() }}
+      </div>
+
+      <div class="min-w-0">
+        <p class="truncate text-sm font-medium text-white">
+          {{ username() }}
+        </p>
+        <p class="text-xs text-slate-400">Sesión activa</p>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      (click)="onLogout()"
+      class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-medium text-slate-200 transition hover:bg-white/10"
+    >
+      Cerrar sesión
+    </button>
   </div>
 </aside>

@@ -7,8 +7,11 @@
       [historyLoading]="historyLoading()"
       [historyError]="historyError()"
       [selectedHistoryItemId]="selectedHistoryItemId()"
+      [username]="username()"
+      [userInitial]="userInitial()"
       (newAnalysis)="clearInput()"
       (selectHistory)="selectHistoryItem($event)"
+      (logout)="logout()"
     />
   </div>
 
@@ -25,6 +28,7 @@
         (newAnalysis)="clearInput(); closeMobileMenu()"
         (selectHistory)="selectHistoryItem($event); closeMobileMenu()"
         (closeMenu)="closeMobileMenu()"
+        (logout)="logout()"
       />
     </div>
   }

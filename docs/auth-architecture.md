@@ -163,6 +163,22 @@ This approach prioritizes:
 
 ---
 
+# Current Frontend OIDC Integration
+
+The current SpecPilot frontend integrates directly with Keycloak using OpenID Connect (OIDC).
+
+Current implemented capabilities:
+
+- Centralized login through Keycloak
+- Shared session handling
+- Automatic login redirection
+- Logout flow through the Identity Provider
+- Frontend route protection foundation
+- Session persistence across page reloads
+- Runtime token management through Keycloak client integration
+
+The Angular frontend does not own authentication logic directly and delegates identity management entirely to the centralized Identity Provider.
+
 # Shared Authentication Boundaries
 
 ## Keycloak Responsibilities
@@ -183,6 +199,15 @@ This approach prioritizes:
 - Route protection
 - Token attachment to API calls
 - Logout flow
+- OIDC session initialization
+
+## Frontend Token Storage Strategy
+
+The frontend does not implement custom token persistence in localStorage.
+
+OIDC token lifecycle and session state are delegated to the Keycloak client integration. Tokens are consumed at runtime by the Angular application and will later be attached to backend API requests through an HTTP interceptor.
+
+This avoids introducing custom token storage logic at this stage and keeps the authentication flow aligned with the Identity Provider.
 
 ## Backend Responsibilities
 

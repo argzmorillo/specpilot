@@ -3,6 +3,7 @@ import { of, throwError } from 'rxjs';
 
 import { AnalysisService } from '../../services/analysis.service';
 import { AnalysisPageComponent } from './analysis-page.component';
+import { AuthService } from '../../../../auth/auth.service';
 
 describe('AnalysisPageComponent', () => {
   let fixture: ComponentFixture<AnalysisPageComponent>;
@@ -30,6 +31,16 @@ describe('AnalysisPageComponent', () => {
         {
           provide: AnalysisService,
           useValue: mockAnalysisService,
+        },
+        {
+          provide: AuthService,
+          useValue: {
+            getUsername: () => 'demo',
+            logout: jasmine.createSpy('logout'),
+            isLoggedIn: () => true,
+            login: jasmine.createSpy('login'),
+            getToken: () => 'fake-token',
+          },
         },
       ],
     }).compileComponents();

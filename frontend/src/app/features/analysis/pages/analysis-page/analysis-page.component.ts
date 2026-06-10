@@ -19,6 +19,7 @@ import {
 import { AnalysisHistoryItem } from '../../models/analysis-history-item.model';
 import { SidebarComponent } from '../../../../shared/layout/sidebar/sidebar.component';
 import { MobileHeaderComponent } from '../../../../shared/layout/mobile-header/mobile-header.component';
+import { AuthService } from '../../../../auth/auth.service';
 
 @Component({
   selector: 'app-analysis-page',
@@ -36,6 +37,7 @@ import { MobileHeaderComponent } from '../../../../shared/layout/mobile-header/m
 })
 export class AnalysisPageComponent implements OnInit {
   private readonly analysisService = inject(AnalysisService);
+  private readonly authService = inject(AuthService);
   readonly maxInputLength = 10000;
 
   readonly fileTextIcon = FileText;
@@ -53,6 +55,9 @@ export class AnalysisPageComponent implements OnInit {
   readonly mobileMenuOpen = signal(false);
   readonly menuIcon = Menu;
   readonly closeIcon = X;
+
+  readonly username = computed(() => this.authService.getUsername() ?? 'Usuario');
+  readonly userInitial = computed(() => this.username()?.charAt(0).toUpperCase() ?? 'U');
 
   text = signal('');
   result = signal<AnalyzeResult | null>(null);
@@ -139,6 +144,10 @@ export class AnalysisPageComponent implements OnInit {
   readonly isAnalyzeDisabled = computed(
     () => this.isInputEmpty() || this.isInputTooLong() || this.loading(),
   );
+
+  logout(): void {
+    void this.authService.logout();
+  }
 
   openMobileMenu(): void {
     this.mobileMenuOpen.set(true);
