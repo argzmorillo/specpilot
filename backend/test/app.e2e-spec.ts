@@ -1,5 +1,9 @@
 /// <reference types="jest" />
 
+jest.mock('jwks-rsa', () => ({
+  passportJwtSecret: jest.fn(() => 'test-secret'),
+}));
+
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import type { INestApplication } from '@nestjs/common';
@@ -8,6 +12,8 @@ import type { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 import { AiService } from '../src/ai/ai.service';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
+import { ConfigService } from '@nestjs/config';
 
 const mockAnalayzeResult = {
   summary: 'Fake summary',
@@ -34,6 +40,20 @@ describe('AppController (e2e)', () => {
       .useValue({
         $connect: jest.fn(),
         $disconnect: jest.fn(),
+      })
+      .overrideProvider(ConfigService)
+      .useValue({
+        get: jest.fn((key: string) => {
+          if (key === 'KEYCLOAK_ISSUER_URL') return 'http://keycloak-test/realms/specpilot';
+          if (key === 'KEYCLOAK_CLIENT_ID') return 'specpilot-api';
+          if (key === 'OPENAI_API_KEY') return 'fake-api-key';
+          if (key === 'OPENAI_MODEL') return 'fake-model';
+          return null;
+        }),
+      })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({
+        canActivate: () => true,
       })
       .compile();
 

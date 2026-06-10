@@ -250,6 +250,19 @@ Authorized / Rejected
 
 ---
 
+## Backend JWT Protection
+
+The NestJS backend validates Keycloak-issued JWT access tokens using the realm issuer, JWKS public keys and the expected API audience.
+
+Protected endpoints require an `Authorization: Bearer <access_token>` header.
+
+Current protected endpoints:
+
+- `POST /ai/analyze`
+- `GET /analysis`
+
+The backend extracts authenticated user metadata and roles from the token payload to prepare future RBAC support.
+
 # Future Ecosystem Expansion
 
 Future applications should only require:
