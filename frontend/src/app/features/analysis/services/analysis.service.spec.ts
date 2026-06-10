@@ -1,24 +1,20 @@
-import { ComponentFixture, TestBed } from '@angular/core/testing';
-
-import { AnalysisPageComponent } from '../pages/analysis-page/analysis-page.component';
+import { TestBed } from '@angular/core/testing';
 import { provideHttpClient } from '@angular/common/http';
 
+import { AnalysisService } from './analysis.service';
+
 describe('AnalysisService', () => {
-  let component: AnalysisPageComponent;
-  let fixture: ComponentFixture<AnalysisPageComponent>;
+  let service: AnalysisService;
 
-  beforeEach(async () => {
-    await TestBed.configureTestingModule({
-      imports: [AnalysisPageComponent],
+  beforeEach(() => {
+    TestBed.configureTestingModule({
       providers: [provideHttpClient()],
-    }).compileComponents();
+    });
 
-    fixture = TestBed.createComponent(AnalysisPageComponent);
-    component = fixture.componentInstance;
-    fixture.detectChanges();
+    service = TestBed.inject(AnalysisService);
   });
 
   it('should be created', () => {
-    expect(component).toBeTruthy();
+    expect(service).toBeTruthy();
   });
 });

@@ -22,6 +22,10 @@ export class SidebarComponent {
   readonly selectHistory = output<AnalysisHistoryItem>();
   readonly closeMenu = output<void>();
 
+  readonly username = input<string>('Usuario');
+  readonly userInitial = input<string>('U');
+  readonly logout = output<void>();
+
   onNewAnalysis() {
     this.newAnalysis.emit();
 
@@ -32,6 +36,14 @@ export class SidebarComponent {
 
   onSelectHistory(item: AnalysisHistoryItem): void {
     this.selectHistory.emit(item);
+
+    if (this.isMobile()) {
+      this.closeMenu.emit();
+    }
+  }
+
+  onLogout(): void {
+    this.logout.emit();
 
     if (this.isMobile()) {
       this.closeMenu.emit();
