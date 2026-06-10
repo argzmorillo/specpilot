@@ -5,6 +5,7 @@ import { AiModule } from './ai/ai.module';
 import { ConfigModule } from '@nestjs/config';
 import { PrismaModule } from './prisma/prisma.module';
 import { AnalysisModule } from './analysis/analysis.module';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -14,6 +15,7 @@ import { AnalysisModule } from './analysis/analysis.module';
     }),
     PrismaModule,
     AnalysisModule,
+    AuthModule,
   ],
   controllers: [AppController],
   providers: [AppService],

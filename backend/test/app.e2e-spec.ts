@@ -1,5 +1,9 @@
 /// <reference types="jest" />
 
+jest.mock('jwks-rsa', () => ({
+  passportJwtSecret: jest.fn(() => 'test-secret'),
+}));
+
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import type { INestApplication } from '@nestjs/common';
@@ -8,6 +12,7 @@ import type { App } from 'supertest/types';
 import { AppModule } from './../src/app.module';
 import { AiService } from '../src/ai/ai.service';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 
 const mockAnalayzeResult = {
   summary: 'Fake summary',
@@ -34,6 +39,10 @@ describe('AppController (e2e)', () => {
       .useValue({
         $connect: jest.fn(),
         $disconnect: jest.fn(),
+      })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({
+        canActivate: () => true,
       })
       .compile();
 

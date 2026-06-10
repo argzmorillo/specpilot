@@ -1,3 +1,7 @@
+jest.mock('jwks-rsa', () => ({
+  passportJwtSecret: jest.fn(() => 'test-secret'),
+}));
+
 import type { INestApplication } from '@nestjs/common';
 import { ValidationPipe } from '@nestjs/common';
 import { Test } from '@nestjs/testing';
@@ -6,6 +10,7 @@ import { AppModule } from '../src/app.module';
 import request from 'supertest';
 import { AiService } from '../src/ai/ai.service';
 import { PrismaService } from '../src/prisma/prisma.service';
+import { JwtAuthGuard } from '../src/auth/jwt-auth.guard';
 
 describe('AiController (e2e)', () => {
   let app: INestApplication;
@@ -19,7 +24,6 @@ describe('AiController (e2e)', () => {
   };
 
   const mockAiService = {
-    // analyzeText: jest.fn().mockResolvedValue(mockAnalyzeResult),
     analyzeText: jest.fn(),
   };
 
@@ -35,6 +39,10 @@ describe('AiController (e2e)', () => {
       .useValue({
         $connect: jest.fn(),
         $disconnect: jest.fn(),
+      })
+      .overrideGuard(JwtAuthGuard)
+      .useValue({
+        canActivate: () => true,
       })
       .compile();
 
