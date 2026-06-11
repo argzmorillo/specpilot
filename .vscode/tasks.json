@@ -1,0 +1,56 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      "label": "SpecPilot: Backend",
+      "type": "shell",
+      "command": "npm run start:dev",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "specpilot"
+      }
+    },
+    {
+      "label": "SpecPilot: Frontend",
+      "type": "shell",
+      "command": "npm start",
+      "options": {
+        "cwd": "${workspaceFolder}/frontend"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "specpilot"
+      }
+    },
+    {
+      "label": "SpecPilot: Prisma Studio",
+      "type": "shell",
+      "command": "npx prisma studio",
+      "options": {
+        "cwd": "${workspaceFolder}/backend"
+      },
+      "isBackground": true,
+      "problemMatcher": [],
+      "presentation": {
+        "reveal": "always",
+        "panel": "dedicated",
+        "group": "specpilot"
+      }
+    },
+    {
+      "label": "SpecPilot: Dev",
+      "dependsOrder": "parallel",
+      "dependsOn": ["SpecPilot: Backend", "SpecPilot: Frontend", "SpecPilot: Prisma Studio"],
+      "problemMatcher": []
+    }
+  ]
+}
