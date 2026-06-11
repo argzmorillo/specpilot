@@ -17,6 +17,23 @@ To support these requirements, the authentication architecture must remain decou
 
 ---
 
+## Executive Summary
+
+SpecPilot AI uses a centralized authentication architecture based on Keycloak and OpenID Connect (OIDC).
+
+The application acts as the first member of a future ecosystem composed of multiple frontend and backend applications sharing:
+
+- Authentication
+- Identity management
+- Single Sign-On (SSO)
+- Authorization foundations
+
+Users authenticate once through Keycloak and can access future ecosystem applications without re-authenticating.
+
+Backend APIs validate JWT access tokens issued by Keycloak and extract authenticated user information and roles for authorization purposes.
+
+This architecture was selected to demonstrate enterprise-grade authentication patterns commonly used in modern distributed systems.
+
 # Authentication Strategy
 
 ## OAuth2 vs OpenID Connect (OIDC)

@@ -32,6 +32,22 @@ SpecPilot AI is the first application of a broader portfolio ecosystem featuring
 - OpenAI integration layer
 - Modular backend structure
 
+## Authentication Architecture
+
+SpecPilot AI uses a centralized authentication architecture based on Keycloak and OpenID Connect (OIDC).
+
+Key capabilities:
+
+- Centralized authentication
+- Single Sign-On (SSO)
+- JWT-based API authorization
+- Shared identity management
+- Ecosystem-ready architecture
+
+For a detailed explanation see:
+
+- [Authentication Architecture](docs/auth-architecture.md)
+
 ### Persistence Architecture
 
 SpecPilot AI uses PostgreSQL and Prisma ORM as the persistence foundation for historical analysis tracking and future ecosystem features.
@@ -157,6 +173,7 @@ Database integration has been prepared incrementally to keep automated tests iso
 Additional architecture decisions and ecosystem documentation can be found inside the `/docs` directory.
 
 Current documentation:
+
 - Shared authentication architecture
 
 ## Current Features
