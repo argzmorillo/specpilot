@@ -1,7 +1,7 @@
 import { Injectable, InternalServerErrorException } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import openAIClient from 'openai';
-import { AnalyzeResult } from './types/analyze-result.type';
+import { AnalyzeResult } from './interfaces/analyze-result.interface';
 import { AnalysisRepository } from '../analysis/analysis.repository';
 
 @Injectable()

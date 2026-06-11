@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import { PassportStrategy } from '@nestjs/passport';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import jwksRsa from 'jwks-rsa';
+import { extractRolesFromToken } from './utils/extract-roles.util';
 
 interface KeycloakJwtPayload {
   sub: string;
@@ -43,14 +44,11 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   }
 
   validate(payload: KeycloakJwtPayload) {
-    const realmRoles = payload.realm_access?.roles ?? [];
-    const clientRoles = payload.resource_access?.['specpilot-api']?.roles ?? [];
-
     return {
       sub: payload.sub,
       email: payload.email,
       username: payload.preferred_username,
-      roles: [...realmRoles, ...clientRoles],
+      roles: extractRolesFromToken(payload),
     };
   }
 }

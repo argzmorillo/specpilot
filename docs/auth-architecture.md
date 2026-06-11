@@ -263,6 +263,154 @@ Current protected endpoints:
 
 The backend extracts authenticated user metadata and roles from the token payload to prepare future RBAC support.
 
+# Ecosystem Roles Foundation
+
+SpecPilot AI introduces a lightweight Role-Based Access Control (RBAC) foundation to prepare the ecosystem for future multi-application authorization requirements.
+
+At the current stage, roles are extracted and normalized by the backend, but route-level role restrictions are intentionally kept minimal to avoid premature complexity.
+
+---
+
+## Initial Roles
+
+The ecosystem currently defines the following application roles:
+
+```text
+specpilot_user
+specpilot_admin
+```
+
+### specpilot_user
+
+Represents a standard authenticated user of the SpecPilot application.
+
+Current responsibilities:
+
+- Access protected SpecPilot functionality
+- Generate AI analyses
+- Access authenticated application features
+- Access personal analysis history
+
+### specpilot_admin
+
+Represents a future administrative role within the SpecPilot ecosystem.
+
+Potential future responsibilities:
+
+- Platform administration
+- Usage monitoring
+- Operational oversight
+- Administrative endpoints
+
+At the current stage, this role is documented and extracted from tokens but is not yet enforced through dedicated authorization rules.
+
+---
+
+## Application Access Strategy
+
+Authentication and authorization responsibilities remain separated.
+
+Authentication is delegated to Keycloak through OpenID Connect (OIDC).
+
+Authorization decisions remain the responsibility of each application backend.
+
+This approach allows future applications to:
+
+- Share authentication
+- Reuse user sessions
+- Implement independent authorization rules
+- Maintain application-specific access boundaries
+
+Applications authenticate users through the shared Identity Provider while retaining control over their own domain-specific authorization requirements.
+
+---
+
+## Role Sources
+
+Roles may be provided by Keycloak through:
+
+- Realm roles
+- Client roles
+
+The backend currently supports extracting roles from:
+
+```text
+realm_access.roles
+resource_access.{client}.roles
+```
+
+Only roles explicitly recognized by the SpecPilot ecosystem are considered application roles.
+
+This prevents internal Keycloak roles from becoming part of application-level authorization decisions.
+
+---
+
+## Backend Role Extraction
+
+The backend normalizes authenticated users through the JWT validation layer.
+
+Authenticated requests expose a normalized user object containing:
+
+```ts
+{
+  sub: string;
+  email?: string;
+  username?: string;
+  roles: EcosystemRole[];
+}
+```
+
+This allows application services and controllers to work with a stable user contract instead of directly consuming raw JWT payloads.
+
+---
+
+## Current Authorization Scope
+
+The current implementation provides:
+
+- JWT signature validation
+- Issuer validation
+- Audience validation
+- Authenticated user extraction
+- Role extraction and normalization
+
+The current implementation does not yet include:
+
+- Route-level role restrictions
+- Dedicated admin-only endpoints
+- Fine-grained permissions
+- Permission-based access control
+
+These capabilities will be introduced only when required by future ecosystem growth.
+
+---
+
+## Future RBAC Evolution
+
+The current foundation has been designed to support future authorization requirements across multiple applications.
+
+Potential future roles may include:
+
+```text
+ecosystem_admin
+portfolio_user
+specpilot_viewer
+specpilot_manager
+```
+
+Future enhancements may include:
+
+- Role-based route guards
+- Application-specific administrative areas
+- Shared ecosystem administration
+- Permission-based authorization if required
+
+The architecture intentionally evolves from authentication, to role extraction, to role enforcement, and finally to more advanced authorization models only when justified by business requirements.
+
+```
+
+```
+
 # Future Ecosystem Expansion
 
 Future applications should only require:
@@ -353,13 +501,4 @@ specpilot
 ```text
 specpilot-frontend
 specpilot-api
-```
-
----
-
-## Initial Roles
-
-```text
-specpilot_user
-specpilot_admin
 ```
