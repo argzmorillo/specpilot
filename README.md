@@ -48,6 +48,18 @@ For a detailed explanation see:
 
 - [Authentication Architecture](docs/auth-architecture.md)
 
+## Environment Configuration
+
+SpecPilot supports local and production-like configuration through environment-specific variables.
+
+The application is designed to support multiple deployment environments without requiring source code modifications.
+
+Configuration values such as database connections, API keys, authentication endpoints and allowed origins are externalized through environment variables.
+
+For a detailed explanation see:
+
+- [Environment Configuration](docs/environment-configuration.md)
+
 ### Persistence Architecture
 
 SpecPilot AI uses PostgreSQL and Prisma ORM as the persistence foundation for historical analysis tracking and future ecosystem features.

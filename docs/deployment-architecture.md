@@ -49,7 +49,7 @@ Current deployment components:
         │                     │                     │
         ▼                     ▼                     ▼
 
- app.adrianmorillo.com  api.adrianmorillo.com  auth.adrianmorillo.com
+ specpilot.adrianmorillo.com  specpilot-api.adrianmorillo.com  auth.adrianmorillo.com
       Angular               NestJS API              Keycloak
 
                               │
@@ -106,7 +106,7 @@ Benefits:
 Subdomain:
 
 ```text
-app.adrianmorillo.com
+specpilot.adrianmorillo.com
 ```
 
 Responsibilities:
@@ -125,7 +125,7 @@ The frontend does not contain business logic or authentication ownership.
 Subdomain:
 
 ```text
-api.adrianmorillo.com
+specpilot-api.adrianmorillo.com
 ```
 
 Responsibilities:
@@ -259,8 +259,8 @@ Does not own:
 Public services:
 
 ```text
-app.adrianmorillo.com
-api.adrianmorillo.com
+specpilot.adrianmorillo.com
+specpilot-api.adrianmorillo.com
 auth.adrianmorillo.com
 ci.adrianmorillo.com
 ```
@@ -299,11 +299,11 @@ Backend:
 Potential future topology:
 
 ```text
-app.adrianmorillo.com
+specpilot.adrianmorillo.com
 portfolio.adrianmorillo.com
 future-app.adrianmorillo.com
 
-api.adrianmorillo.com
+specpilot-api.adrianmorillo.com
 spring-api.adrianmorillo.com
 python-api.adrianmorillo.com
 

@@ -52,7 +52,7 @@ describe('AnalysisController (e2e)', () => {
       .overrideProvider(ConfigService)
       .useValue({
         get: jest.fn((key: string) => {
-          if (key === 'KEYCLOAK_ISSUER_URL') return 'http://localhost:8080/realms/SpecPilot';
+          if (key === 'KEYCLOAK_ISSUER_URL') return 'http://localhost:8080/realms/specpilot';
           if (key === 'KEYCLOAK_CLIENT_ID') return 'specpilot-api';
           if (key === 'OPENAI_API_KEY') return 'fake-api-key';
           if (key === 'OPENAI_MODEL') return 'fake-model';
