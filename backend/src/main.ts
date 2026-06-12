@@ -1,12 +1,25 @@
+import { ValidationPipe } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { ValidationPipe } from '@nestjs/common';
+
+function getAllowedOrigins(): string[] {
+  const allowedOrigins = process.env.CORS_ALLOWED_ORIGINS;
+
+  if (!allowedOrigins) {
+    throw new Error('CORS_ALLOWED_ORIGINS is not defined');
+  }
+
+  return allowedOrigins
+    .split(',')
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+}
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors({
-    origin: 'http://localhost:4200',
+    origin: getAllowedOrigins(),
     methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE'],
     allowedHeaders: ['Content-Type', 'Authorization'],
     credentials: true,

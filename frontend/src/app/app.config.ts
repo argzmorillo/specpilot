@@ -19,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideKeycloak({
       config: {
         url: 'http://localhost:8080',
-        realm: 'SpecPilot',
+        realm: 'specpilot',
         clientId: 'specpilot-frontend',
       },
       initOptions: {
