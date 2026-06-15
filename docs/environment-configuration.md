@@ -58,6 +58,7 @@ Production configuration must follow these rules:
 - Environment-specific values must be configurable
 - Backend secrets must be stored only in the deployment environment
 - Frontend public configuration may contain public URLs and OIDC client identifiers
+- The frontend is distributed as a static Angular production build served through Nginx inside a Docker container.
 - OpenAI keys and database credentials must never be exposed to the frontend
 
 ---
@@ -82,8 +83,10 @@ When running the backend inside Docker while Keycloak runs on the host machine, 
 Target private beta environment:
 
 ```text
-Frontend: https://specpilot.adrianmorillo.com
-Backend: https://specpilot-api.adrianmorillo.com
+Frontend: Angular Production Build + Nginx Container
+URL: https://specpilot.adrianmorillo.com
+Backend: NestJS Docker Container
+URL: https://specpilot-api.adrianmorillo.com
 Keycloak: https://auth.adrianmorillo.com
 PostgreSQL: Internal Docker Network
 Jenkins: https://ci.adrianmorillo.com
