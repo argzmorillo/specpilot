@@ -54,6 +54,8 @@ describe('AnalysisController (e2e)', () => {
         get: jest.fn((key: string) => {
           if (key === 'KEYCLOAK_ISSUER_URL') return 'http://localhost:8080/realms/specpilot';
           if (key === 'KEYCLOAK_CLIENT_ID') return 'specpilot-api';
+          if (key === 'KEYCLOAK_JWKS_URI')
+            return 'http://localhost:8080/realms/specpilot/protocol/openid-connect/certs';
           if (key === 'OPENAI_API_KEY') return 'fake-api-key';
           if (key === 'OPENAI_MODEL') return 'fake-model';
           return null;
