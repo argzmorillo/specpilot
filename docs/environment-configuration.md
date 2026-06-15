@@ -20,16 +20,17 @@ The NestJS backend reads configuration through environment variables.
 
 ## Required Backend Variables
 
-| Variable             | Description                          | Local Example                                                           | Production Example                              |
-| -------------------- | ------------------------------------ | ----------------------------------------------------------------------- | ----------------------------------------------- |
-| NODE_ENV             | Runtime environment                  | development                                                             | production                                      |
-| PORT                 | Backend HTTP port                    | 3000                                                                    | 3000                                            |
-| DATABASE_URL         | PostgreSQL connection string         | postgresql://specpilot:specpilot@localhost:5432/specpilot?schema=public | Managed by deployment environment               |
-| OPENAI_API_KEY       | OpenAI API key                       | your-openai-api-key                                                     | Secret value                                    |
-| OPENAI_MODEL         | OpenAI model used by the application | gpt-4.1-mini                                                            | gpt-4.1-mini                                    |
-| KEYCLOAK_ISSUER_URL  | Keycloak realm issuer URL            | http://localhost:8080/realms/specpilot                                  | https://auth.adrianmorillo.com/realms/specpilot |
-| KEYCLOAK_CLIENT_ID   | API client used for JWT validation   | specpilot-api                                                           | specpilot-api                                   |
-| CORS_ALLOWED_ORIGINS | Allowed frontend origins             | http://localhost:4200                                                   | https://specpilot.adrianmorillo.com             |
+| Variable             | Description                                                 | Local Example                                                           | Production Example                                                            |
+| -------------------- | ----------------------------------------------------------- | ----------------------------------------------------------------------- | ----------------------------------------------------------------------------- | --- |
+| NODE_ENV             | Runtime environment                                         | development                                                             | production                                                                    |
+| PORT                 | Backend HTTP port                                           | 3000                                                                    | 3000                                                                          |
+| DATABASE_URL         | PostgreSQL connection string                                | postgresql://specpilot:specpilot@localhost:5432/specpilot?schema=public | Managed by deployment environment                                             |
+| OPENAI_API_KEY       | OpenAI API key                                              | your-openai-api-key                                                     | Secret value                                                                  |
+| OPENAI_MODEL         | OpenAI model used by the application                        | gpt-5.4-mini                                                            | gpt-5.4-mini                                                                  |     |
+| KEYCLOAK_ISSUER_URL  | Keycloak realm issuer URL                                   | http://localhost:8080/realms/specpilot                                  | https://auth.adrianmorillo.com/realms/specpilot                               |
+| KEYCLOAK_JWKS_URI    | Keycloak JWKS endpoint used to retrieve public signing keys | http://localhost:8080/realms/specpilot/protocol/openid-connect/certs    | https://auth.adrianmorillo.com/realms/specpilot/protocol/openid-connect/certs |
+| KEYCLOAK_CLIENT_ID   | API client used for JWT validation                          | specpilot-api                                                           | specpilot-api                                                                 |
+| CORS_ALLOWED_ORIGINS | Allowed frontend origins                                    | http://localhost:4200                                                   | https://specpilot.adrianmorillo.com                                           |
 
 ---
 
@@ -71,6 +72,8 @@ Backend: http://localhost:3000
 Keycloak: http://localhost:8080
 PostgreSQL: localhost:5432
 ```
+
+When running the backend inside Docker while Keycloak runs on the host machine, `KEYCLOAK_JWKS_URI` may use `host.docker.internal` while `KEYCLOAK_ISSUER_URL` must always match the issuer contained in the JWT token.
 
 ---
 

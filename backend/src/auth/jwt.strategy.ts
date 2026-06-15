@@ -20,6 +20,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(configService: ConfigService) {
     const issuer = configService.get<string>('KEYCLOAK_ISSUER_URL');
     const audience = configService.get<string>('KEYCLOAK_CLIENT_ID');
+    const jwksUri = configService.get<string>('KEYCLOAK_JWKS_URI');
 
     if (!issuer) {
       throw new Error('KEYCLOAK_ISSUER_URL is not defined');
@@ -29,13 +30,17 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
       throw new Error('KEYCLOAK_CLIENT_ID is not defined');
     }
 
+    if (!jwksUri) {
+      throw new Error('KEYCLOAK_JWKS_URI is not defined');
+    }
+
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       issuer,
       audience,
       algorithms: ['RS256'],
       secretOrKeyProvider: jwksRsa.passportJwtSecret({
-        jwksUri: `${issuer}/protocol/openid-connect/certs`,
+        jwksUri,
         cache: true,
         rateLimit: true,
         jwksRequestsPerMinute: 5,
