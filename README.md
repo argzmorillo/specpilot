@@ -46,8 +46,6 @@ Key capabilities:
 
 For a detailed explanation see:
 
-- [Authentication Architecture](docs/auth-architecture.md)
-
 ## Environment Configuration
 
 SpecPilot supports local and production-like configuration through environment-specific variables.
@@ -55,10 +53,6 @@ SpecPilot supports local and production-like configuration through environment-s
 The application is designed to support multiple deployment environments without requiring source code modifications.
 
 Configuration values such as database connections, API keys, authentication endpoints and allowed origins are externalized through environment variables.
-
-For a detailed explanation see:
-
-- [Environment Configuration](docs/environment-configuration.md)
 
 ### Persistence Architecture
 
@@ -186,7 +180,22 @@ Additional architecture decisions and ecosystem documentation can be found insid
 
 Current documentation:
 
-- Shared authentication architecture
+### Architecture
+
+- [Authentication Architecture](docs/architecture/auth-architecture.md)
+- [Environment Configuration](docs/architecture/environment-configuration.md)
+- [Deployment Architecture](docs/architecture/deployment-architecture.md)
+- [PostgreSQL Persistence](docs/architecture/postgresql-persistence.md)
+
+### Deployment
+
+- [Backend Docker Image](docs/deployment/backend-docker.md)
+- [Frontend Docker Image](docs/deployment/frontend-docker.md)
+- [Docker Compose Stack](docs/deployment/docker-compose-stack.md)
+
+### Portfolio Ecosystem
+
+- [Ecosystem Vision](docs/portfolio/ecosystem-vision.md)
 
 ## Current Features
 
