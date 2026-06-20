@@ -194,6 +194,11 @@ Current documentation:
 - [Backend Docker Image](docs/deployment/backend-docker.md)
 - [Frontend Docker Image](docs/deployment/frontend-docker.md)
 - [Docker Compose Stack](docs/deployment/docker-compose-stack.md)
+- [NGINX Reverse Proxy Routing](docs/deployment/reverse-proxy-routing.md)
+
+### Operations
+
+- [Health Checks](docs/operations/health-checks.md)
 
 ### Portfolio Ecosystem
 
