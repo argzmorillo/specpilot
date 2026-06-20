@@ -46,6 +46,8 @@ Key capabilities:
 
 For a detailed explanation see:
 
+- [Authentication Architecture](docs/architecture/auth-architecture.md)
+
 ## Environment Configuration
 
 SpecPilot supports local and production-like configuration through environment-specific variables.
@@ -197,6 +199,18 @@ Current documentation:
 
 - [Ecosystem Vision](docs/portfolio/ecosystem-vision.md)
 
+## Deployment Status
+
+Current deployment stack includes:
+
+- Angular Frontend
+- NestJS Backend
+- PostgreSQL
+- Keycloak
+- Docker Compose orchestration
+
+The platform can currently be executed locally through the production-oriented Docker stack used as the foundation for future VPS deployment.
+
 ## Current Features
 
 - AI-powered specification analysis
@@ -261,10 +275,14 @@ Current stage:
 - Functional MVP
 - Frontend/backend communication working
 - AI analysis flow operational
-- CI pipeline configured
 - Automated tests enabled
-- Persistence architecture operational
+- PostgreSQL persistence operational
 - Historical analysis tracking enabled
+- Dockerized backend
+- Dockerized frontend
+- Production-oriented Docker Compose stack
+- Keycloak authentication integration
+- JWT-based API protection
 
 ---
 
