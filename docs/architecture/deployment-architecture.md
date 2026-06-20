@@ -30,7 +30,7 @@ Current deployment components:
 - PostgreSQL
 - Keycloak
 - Jenkins
-- Caddy Reverse Proxy
+- NGINX Reverse Proxy
 
 ---
 
@@ -43,13 +43,13 @@ Current deployment components:
                     adrianmorillo.com
                               │
                               ▼
-                    Caddy Reverse Proxy
+                    NGINX Reverse Proxy
                               │
         ┌─────────────────────┼─────────────────────┐
         │                     │                     │
         ▼                     ▼                     ▼
 
- specpilot.adrianmorillo.com  specpilot-api.adrianmorillo.com  auth.adrianmorillo.com
+ specpilot.adrianmorillo.com  api.specpilot.adrianmorillo.com  auth.adrianmorillo.com
       Angular               NestJS API              Keycloak
 
                               │
@@ -82,22 +82,26 @@ Responsibilities:
 
 ---
 
-## Caddy Reverse Proxy
+## NGINX Reverse Proxy
 
-Caddy serves as the public entry point of the platform.
+NGINX serves as the public entry point of the platform.
 
 Responsibilities:
 
 - HTTPS termination
-- Automatic TLS certificate management
-- Request routing
-- Reverse proxy functionality
+- Reverse proxy routing
+- Security headers
+- Request forwarding
+- Optional rate limiting
+- Optional response compression
 
 Benefits:
 
-- Minimal configuration
-- Automatic Let's Encrypt integration
-- Production-ready defaults
+- Industry-standard reverse proxy
+- Production-proven architecture
+- Fine-grained routing control
+- Compatible with Let's Encrypt
+- Widely used in enterprise environments
 
 ---
 
@@ -125,7 +129,7 @@ The frontend does not contain business logic or authentication ownership.
 Subdomain:
 
 ```text
-specpilot-api.adrianmorillo.com
+api.specpilot.adrianmorillo.com
 ```
 
 Responsibilities:
@@ -286,7 +290,7 @@ Public services:
 
 ```text
 specpilot.adrianmorillo.com
-specpilot-api.adrianmorillo.com
+api.specpilot.adrianmorillo.com
 auth.adrianmorillo.com
 ci.adrianmorillo.com
 ```
@@ -298,9 +302,11 @@ postgres
 docker networks
 ```
 
-Only Caddy exposes services to the Internet.
+Only NGINX exposes services to the Internet.
 
-Internal services communicate through Docker networks.
+NGINX routes traffic to the appropriate internal service based on the requested domain or subdomain.
+
+Internal services communicate exclusively through Docker networks.
 
 ---
 
@@ -325,13 +331,14 @@ Backend:
 Potential future topology:
 
 ```text
+adrianmorillo.com
+
 specpilot.adrianmorillo.com
-portfolio.adrianmorillo.com
 future-app.adrianmorillo.com
 
-specpilot-api.adrianmorillo.com
-spring-api.adrianmorillo.com
-python-api.adrianmorillo.com
+api.specpilot.adrianmorillo.com
+api.spring.adrianmorillo.com
+api.adrianmorillo.com
 
 auth.adrianmorillo.com
 ci.adrianmorillo.com
@@ -386,6 +393,7 @@ The deployment architecture is designed to demonstrate:
 - Containerized infrastructure
 - Cross-application scalability
 - Production-oriented architecture
+- Centralized reverse proxy architecture
 
 ```
 
