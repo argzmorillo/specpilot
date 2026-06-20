@@ -199,6 +199,7 @@ Current documentation:
 ### Operations
 
 - [Health Checks](docs/operations/health-checks.md)
+- [CI Pipeline](docs/operations/ci-pipeline.md)
 
 ### Portfolio Ecosystem
 
