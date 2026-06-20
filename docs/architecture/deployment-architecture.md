@@ -159,9 +159,7 @@ PostgreSQL is not exposed publicly.
 
 Subdomain:
 
-```text
 auth.adrianmorillo.com
-```
 
 Responsibilities:
 
@@ -173,6 +171,34 @@ Responsibilities:
 - Single Sign-On (SSO)
 
 Keycloak acts as the centralized Identity Provider for the ecosystem.
+
+---
+
+## Current Keycloak Configuration
+
+Current realm:
+
+specpilot
+
+Current clients:
+
+- specpilot-frontend
+- specpilot-api
+
+Current application roles:
+
+- specpilot_user
+- specpilot_admin
+
+The realm configuration is versioned inside the repository:
+
+infrastructure/keycloak/specpilot-realm.json
+
+The Angular frontend authenticates users through OpenID Connect (OIDC).
+
+The NestJS backend validates JWT access tokens issued by Keycloak and extracts application roles from the token payload.
+
+User accounts are managed through the Keycloak Administration Console and are not versioned inside the repository.
 
 ---
 

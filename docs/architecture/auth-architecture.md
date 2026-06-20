@@ -462,6 +462,73 @@ The long-term goal is to evolve the portfolio ecosystem into a multi-application
 - Modular application boundaries
 - Scalable authentication architecture
 
+# Current Keycloak Deployment
+
+The current SpecPilot platform deploys Keycloak as an independent service within the Docker Compose stack.
+
+Keycloak is responsible for:
+
+- User authentication
+- JWT issuance
+- Role management
+- Session management
+- OpenID Connect (OIDC) integration
+
+## Current Realm Structure
+
+Realm:
+
+```text
+specpilot
+```
+
+Clients:
+
+```text
+specpilot-frontend
+specpilot-api
+```
+
+Client roles:
+
+```text
+specpilot_user
+specpilot_admin
+```
+
+## Realm Configuration
+
+The current realm configuration is versioned in:
+
+```text
+infrastructure/keycloak/specpilot-realm.json
+```
+
+This configuration allows the authentication infrastructure to be recreated consistently across environments.
+
+## User Management
+
+Application users are managed manually through the Keycloak Administration Console.
+
+User credentials are not stored in the repository and are not included in realm configuration files.
+
+## Current Validation Status
+
+The following authentication validations have been successfully completed:
+
+- Keycloak deployment through Docker Compose
+- Realm creation
+- Client configuration
+- Client role configuration
+- Frontend login flow
+- JWT issuance
+- Backend JWT validation
+- Protected endpoint access
+
+```
+
+```
+
 # Local Development Setup
 
 ## Docker Infrastructure
@@ -495,21 +562,22 @@ http://localhost:8080
 
 ---
 
-## Development Credentials
+## Keycloak Administration
 
-### Keycloak Admin
+Administrator credentials are provided through environment variables and must not be hardcoded in documentation.
 
-```text
-admin / admin
-```
+Current variables:
 
+````text
+KEYCLOAK_ADMIN_USERNAME
+KEYCLOAK_ADMIN_PASSWORD
 ---
 
 ## Current Realm
 
 ```text
 specpilot
-```
+````
 
 ---
 
