@@ -1,0 +1,94 @@
+services:
+  specpilot-frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+    container_name: specpilot-frontend
+    restart: unless-stopped
+    depends_on:
+      - specpilot-api
+    ports:
+      - '4200:80'
+    networks:
+      - specpilot-public
+
+  specpilot-api:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    container_name: specpilot-api
+    restart: unless-stopped
+    env_file:
+      - .env.production
+    depends_on:
+      - postgres
+      - keycloak
+    ports:
+      - '3000:3000'
+    networks:
+      - specpilot-public
+      - specpilot-private
+
+  postgres:
+    image: postgres:17-alpine
+    container_name: specpilot-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: ${POSTGRES_DB}
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+    volumes:
+      - specpilot_postgres_data:/var/lib/postgresql/data
+    networks:
+      - specpilot-private
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:26.0
+    container_name: specpilot-keycloak
+    restart: unless-stopped
+    command: start-dev --import-realm
+    environment:
+      KC_BOOTSTRAP_ADMIN_USERNAME: ${KEYCLOAK_ADMIN_USERNAME}
+      KC_BOOTSTRAP_ADMIN_PASSWORD: ${KEYCLOAK_ADMIN_PASSWORD}
+      KC_HTTP_PORT: 8080
+
+      # Reverse proxy configuration
+      KC_HTTP_ENABLED: true
+      KC_HOSTNAME: auth.adrianmorillo.com
+      KC_HOSTNAME_PORT: 80
+      KC_PROXY_HEADERS: xforwarded
+    volumes:
+      - ./infrastructure/keycloak:/opt/keycloak/data/import
+    ports:
+      - '8080:8080'
+    networks:
+      - specpilot-public
+      - specpilot-private
+
+  nginx:
+    image: nginx:1.27-alpine
+    container_name: specpilot-nginx
+    restart: unless-stopped
+    depends_on:
+      - specpilot-frontend
+      - specpilot-api
+      - keycloak
+    ports:
+      - '80:80'
+      - '443:443'
+    volumes:
+      - ./infrastructure/nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - specpilot-public
+
+networks:
+  specpilot-public:
+    name: specpilot-public
+
+  specpilot-private:
+    name: specpilot-private
+    internal: true
+
+volumes:
+  specpilot_postgres_data:
+    name: specpilot_postgres_data

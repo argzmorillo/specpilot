@@ -1,0 +1,165 @@
+<div>
+  <app-mobile-header [menuIcon]="menuIcon" (openMenu)="openMobileMenu()" />
+
+  <div class="hidden lg:fixed lg:left-0 lg:top-0 lg:block lg:h-screen lg:w-[260px]">
+    <app-sidebar
+      [history]="history()"
+      [historyLoading]="historyLoading()"
+      [historyError]="historyError()"
+      [selectedHistoryItemId]="selectedHistoryItemId()"
+      [username]="username()"
+      [userInitial]="userInitial()"
+      (newAnalysis)="clearInput()"
+      (selectHistory)="selectHistoryItem($event)"
+      (logout)="logout()"
+    />
+  </div>
+
+  @if (mobileMenuOpen()) {
+    <div class="fixed inset-0 z-50 lg:hidden">
+      <app-sidebar
+        class="block h-full"
+        [isMobile]="true"
+        [closeIcon]="closeIcon"
+        [history]="history()"
+        [historyLoading]="historyLoading()"
+        [historyError]="historyError()"
+        [selectedHistoryItemId]="selectedHistoryItemId()"
+        (newAnalysis)="clearInput(); closeMobileMenu()"
+        (selectHistory)="selectHistoryItem($event); closeMobileMenu()"
+        (closeMenu)="closeMobileMenu()"
+        (logout)="logout()"
+      />
+    </div>
+  }
+
+  <main class="min-h-screen p-5 lg:ml-[260px] lg:p-10">
+    <header class="mb-8">
+      <h1 class="text-3xl font-bold tracking-tight text-slate-900 lg:text-4xl">
+        Nuevo análisis técnico
+      </h1>
+
+      <p class="mt-3 max-w-3xl text-base leading-relaxed text-slate-500">
+        Convierte especificaciones, requisitos y documentos funcionales en artefactos técnicos
+        listos para desarrollo.
+      </p>
+    </header>
+
+    <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm lg:p-8">
+      <label for="specification" class="text-sm font-medium text-slate-900">
+        Pega aquí la especificación funcional, briefing o descripción del proyecto
+      </label>
+
+      <textarea
+        id="specification"
+        [(ngModel)]="text"
+        (ngModelChange)="text.set($event)"
+        [maxLength]="maxInputLength"
+        placeholder="Escribe o pega aquí el contenido a analizar..."
+        rows="8"
+        class="mt-4 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white"
+      ></textarea>
+
+      <div class="mt-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        <span class="text-sm text-slate-500">
+          {{ inputLength() }} / {{ maxInputLength }} caracteres
+        </span>
+
+        <div class="flex flex-col gap-3 sm:flex-row sm:items-center">
+          <app-button variant="secondary" [icon]="eraserIcon" (clicked)="clearInput()">
+            Limpiar
+          </app-button>
+
+          <app-button variant="primary" [disabled]="isAnalyzeDisabled()" (clicked)="analyze()">
+            @if (loading()) {
+              Generando análisis...
+            } @else {
+              Generar análisis técnico
+            }
+          </app-button>
+        </div>
+      </div>
+    </section>
+
+    @if (loading()) {
+      <section
+        class="mt-10 rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm"
+      >
+        <div
+          class="mx-auto mb-4 h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600"
+        ></div>
+
+        <h2 class="text-lg font-semibold text-slate-900">Generando análisis técnico</h2>
+
+        <p class="mt-2 text-sm text-slate-500">
+          Estamos analizando la especificación y preparando los artefactos técnicos.
+        </p>
+      </section>
+    }
+
+    @if (error()) {
+      <section class="mt-6 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700">
+        <p>{{ error() }}</p>
+      </section>
+    }
+
+    @if (result() && !loading()) {
+      <section
+        class="mt-10 mb-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between"
+      >
+        <div class="flex items-center gap-3">
+          <h2 class="text-lg font-semibold text-slate-900">Análisis generado</h2>
+
+          <span class="rounded-full bg-emerald-100 px-3 py-1 text-xs font-medium text-emerald-700">
+            Completado
+          </span>
+        </div>
+
+        <app-button variant="secondary" [icon]="rotateCcwIcon" (clicked)="clearInput()">
+          Generar nuevo análisis
+        </app-button>
+      </section>
+
+      <section class="grid gap-5 lg:grid-cols-2">
+        <app-summary-card
+          title="Resumen técnico"
+          [content]="result()?.summary ?? ''"
+          [icon]="fileTextIcon"
+          iconClass="bg-violet-400 text-white"
+        />
+
+        <app-list-card
+          title="User stories"
+          [items]="result()?.userStories ?? []"
+          [icon]="bookOpenIcon"
+          iconClass="bg-emerald-300 text-white"
+          emptyMessage="No se detectaron user stories."
+        />
+
+        <app-list-card
+          title="Tareas técnicas"
+          [items]="result()?.technicalTasks ?? []"
+          [icon]="listChecksIcon"
+          iconClass="bg-blue-400 text-white"
+          emptyMessage="No se detectaron tareas técnicas."
+        />
+
+        <app-list-card
+          title="Riesgos detectados"
+          [items]="result()?.risks ?? []"
+          [icon]="triangleAlertIcon"
+          iconClass="bg-orange-400 text-white"
+          emptyMessage="No se detectaron riesgos."
+        />
+
+        <app-list-card
+          title="Preguntas abiertas"
+          [items]="result()?.questions ?? []"
+          [icon]="listChecksIcon"
+          iconClass="bg-amber-300 text-white"
+          emptyMessage="No se generaron preguntas abiertas."
+        />
+      </section>
+    }
+  </main>
+</div>

@@ -1,0 +1,58 @@
+{
+  "realm": "specpilot",
+  "enabled": true,
+  "roles": {
+    "realm": [
+      {
+        "name": "specpilot_user",
+        "description": "Default SpecPilot user role"
+      },
+      {
+        "name": "specpilot_admin",
+        "description": "SpecPilot administrator role"
+      }
+    ],
+    "client": {
+      "specpilot-api": [
+        {
+          "name": "specpilot_user",
+          "description": "Allows access to SpecPilot protected API endpoints"
+        },
+        {
+          "name": "specpilot_admin",
+          "description": "Allows administrative access to SpecPilot features"
+        }
+      ]
+    }
+  },
+  "clients": [
+    {
+      "clientId": "specpilot-frontend",
+      "name": "SpecPilot Frontend",
+      "enabled": true,
+      "publicClient": true,
+      "protocol": "openid-connect",
+      "standardFlowEnabled": true,
+      "directAccessGrantsEnabled": true,
+      "redirectUris": ["http://localhost:4200/*"],
+      "webOrigins": ["http://localhost:4200"],
+      "attributes": {
+        "post.logout.redirect.uris": "http://localhost:4200/*"
+      }
+    },
+    {
+      "clientId": "specpilot-api",
+      "name": "SpecPilot API",
+      "enabled": true,
+      "publicClient": false,
+      "protocol": "openid-connect",
+      "authorizationServicesEnabled": false,
+      "serviceAccountsEnabled": false,
+      "standardFlowEnabled": false,
+      "directAccessGrantsEnabled": false,
+      "bearerOnly": true,
+      "defaultClientScopes": ["web-origins", "acr", "roles", "profile", "email"],
+      "optionalClientScopes": ["address", "phone", "offline_access", "microprofile-jwt"]
+    }
+  ]
+}

@@ -2,18 +2,24 @@ name: CI
 
 on:
   push:
-    branches: [main]
+    branches: [main, develop]
   pull_request:
-    branches: [main]
+    branches: [main, develop]
 
 jobs:
   backend:
     name: Backend CI
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: backend
+    env:
+      NODE_ENV: test
+      OPENAI_API_KEY: fake-api-key
+      OPENAI_MODEL: fake-model
+      DATABASE_URL: postgresql://test:test@localhost:5432/testdb
+      KEYCLOAK_ISSUER_URL: http://localhost:8080/realms/specpilot
+      KEYCLOAK_JWKS_URI: http://localhost:8080/realms/specpilot/protocol/openid-connect/certs
+      KEYCLOAK_CLIENT_ID: specpilot-api
+      CORS_ALLOWED_ORIGINS: http://localhost:4200
 
     steps:
       - name: Checkout repository
@@ -23,30 +29,28 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install backend dependencies
-        run: npm ci
+        run: npm ci --workspace backend
 
-      - name: Lint backend
-        run: npm run lint
+      - name: Generate Prisma client
+        run: npm run prisma:generate --workspace backend
 
       - name: Test backend
-        run: npm run test
+        run: npm run test --workspace backend
 
       - name: Test backend e2e
-        run: npm run test:e2e
+        run: npm run test:e2e --workspace backend
 
       - name: Build backend
-        run: npm run build
+        run: npm run build --workspace backend
 
   frontend:
     name: Frontend CI
     runs-on: ubuntu-latest
 
-    defaults:
-      run:
-        working-directory: frontend
-
     steps:
       - name: Checkout repository
         uses: actions/checkout@v6
@@ -55,12 +59,14 @@ jobs:
         uses: actions/setup-node@v6
         with:
           node-version: 22
+          cache: npm
+          cache-dependency-path: package-lock.json
 
       - name: Install frontend dependencies
-        run: npm ci
+        run: npm ci --workspace frontend
 
       - name: Test frontend
-        run: npm run test -- --watch=false --browsers=ChromeHeadless
+        run: npm run test --workspace frontend -- --watch=false --browsers=ChromeHeadless
 
       - name: Build frontend
-        run: npm run build
+        run: npm run build --workspace frontend
