@@ -9,6 +9,7 @@ import { routes } from './app.routes';
 import { provideHttpClient, withInterceptors } from '@angular/common/http';
 import { provideKeycloak } from 'keycloak-angular';
 import { AuthInterceptor } from './auth/auth.interceptor';
+import { environment } from '../environments/environment';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -18,7 +19,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(withInterceptors([AuthInterceptor])),
     provideKeycloak({
       config: {
-        url: 'http://localhost:8080',
+        url: environment.keycloakUrl,
         realm: 'specpilot',
         clientId: 'specpilot-frontend',
       },

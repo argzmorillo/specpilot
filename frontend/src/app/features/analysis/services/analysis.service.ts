@@ -2,7 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { inject, Injectable } from '@angular/core';
 import { Observable } from 'rxjs';
 import { AnalyzeResult } from '../models/analyze-result.model';
-import { environment } from '../../../../environments/environment.dev';
+import { environment } from '../../../../environments/environment';
 import { AnalysisHistoryItem } from '../models/analysis-history-item.model';
 
 @Injectable({
