@@ -196,6 +196,7 @@ Current documentation:
 - [Docker Compose Stack](docs/deployment/docker-compose-stack.md)
 - [NGINX Reverse Proxy Routing](docs/deployment/reverse-proxy-routing.md)
 - [Production HTTPS and DNS](docs/deployment/production-https-and-dns.md)
+- [Production Security Configuration](docs/deployment/production-security.md)
 
 ### Operations
 

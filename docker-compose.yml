@@ -1,7 +1,7 @@
 services:
   postgres:
-    image: postgres:16
-    container_name: specpilot-postgres
+    image: postgres:17-alpine
+    container_name: specpilot-postgres-local
     restart: unless-stopped
     environment:
       POSTGRES_USER: specpilot
@@ -10,17 +10,26 @@ services:
     ports:
       - '5432:5432'
     volumes:
-      - specpilot_postgres_data:/var/lib/postgresql/data
+      - specpilot_postgres_local_data:/var/lib/postgresql/data
+    networks:
+      - specpilot-local
 
   keycloak:
     image: quay.io/keycloak/keycloak:26.6.3
-    container_name: specpilot-keycloak
+    container_name: specpilot-keycloak-local
     command: start-dev
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
       KC_BOOTSTRAP_ADMIN_PASSWORD: admin
     ports:
       - '8080:8080'
+    networks:
+      - specpilot-local
+
+networks:
+  specpilot-local:
+    name: specpilot-local
 
 volumes:
-  specpilot_postgres_data:
+  specpilot_postgres_local_data:
+    name: specpilot_postgres_local_data
