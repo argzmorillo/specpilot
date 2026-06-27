@@ -197,6 +197,7 @@ Current documentation:
 - [NGINX Reverse Proxy Routing](docs/deployment/reverse-proxy-routing.md)
 - [Production HTTPS and DNS](docs/deployment/production-https-and-dns.md)
 - [Production Security Configuration](docs/deployment/production-security.md)
+- [Jenkins Deployment](docs/deployment/jenkins-deployment.md)
 
 ### Operations
 

@@ -55,7 +55,7 @@ services:
       # Reverse proxy configuration
       KC_HTTP_ENABLED: true
       KC_HOSTNAME: auth.adrianmorillo.com
-      KC_HOSTNAME_PORT: 80
+      KC_HOSTNAME_PORT: 443
       KC_PROXY_HEADERS: xforwarded
     volumes:
       - ./infrastructure/keycloak:/opt/keycloak/data/import
@@ -73,6 +73,7 @@ services:
       - specpilot-frontend
       - specpilot-api
       - keycloak
+      - jenkins
     ports:
       - '80:80'
       - '443:443'
@@ -82,6 +83,19 @@ services:
       - /opt/infrastructure/certbot/www:/var/www/certbot:ro
     networks:
       - specpilot-public
+
+  jenkins:
+    image: jenkins/jenkins:lts-jdk21
+    container_name: specpilot-jenkins
+    restart: unless-stopped
+    user: root
+    volumes:
+      - specpilot_jenkins_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+      - /opt/ecosystem/specpilot:/opt/ecosystem/specpilot
+    networks:
+      - specpilot-public
+      - specpilot-private
 
 networks:
   specpilot-public:
@@ -94,3 +108,5 @@ networks:
 volumes:
   specpilot_postgres_data:
     name: specpilot_postgres_data
+  specpilot_jenkins_data:
+    name: specpilot_jenkins_data
