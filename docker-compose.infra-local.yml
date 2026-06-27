@@ -1,0 +1,24 @@
+services:
+  jenkins:
+    build:
+      context: .
+      dockerfile: infrastructure/jenkins/Dockerfile
+    image: specpilot-jenkins:lts-jdk21-docker
+    container_name: specpilot-jenkins-local
+    restart: unless-stopped
+    user: root
+    ports:
+      - '8085:8080'
+    volumes:
+      - specpilot_jenkins_local_data:/var/jenkins_home
+      - /var/run/docker.sock:/var/run/docker.sock
+    networks:
+      - specpilot-infra-local
+
+networks:
+  specpilot-infra-local:
+    name: specpilot-infra-local
+
+volumes:
+  specpilot_jenkins_local_data:
+    name: specpilot_jenkins_local_data

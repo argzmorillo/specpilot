@@ -85,7 +85,10 @@ services:
       - specpilot-public
 
   jenkins:
-    image: jenkins/jenkins:lts-jdk21
+    build:
+      context: .
+      dockerfile: infrastructure/jenkins/Dockerfile
+    image: specpilot-jenkins:lts-jdk21-docker
     container_name: specpilot-jenkins
     restart: unless-stopped
     user: root
