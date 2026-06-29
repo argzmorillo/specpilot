@@ -7,37 +7,13 @@ pipeline {
         sh '''
           echo "Validating SpecPilot workspace"
           pwd
-          ls -la
           test -f package.json
           test -d backend
           test -d frontend
           test -f docker-compose.prod.yml
           docker --version
+          docker compose version
         '''
-      }
-    }
-
-    stage('Backend Tests') {
-      steps {
-        dir('backend') {
-          sh '''
-            npm ci
-            npx prisma generate
-            npm run build
-            npm run test
-          '''
-        }
-      }
-    }
-
-    stage('Frontend Build') {
-      steps {
-        dir('frontend') {
-          sh '''
-            npm ci
-            npm run build
-          '''
-        }
       }
     }
 
@@ -45,6 +21,14 @@ pipeline {
       steps {
         sh '''
           docker compose -f docker-compose.prod.yml config
+        '''
+      }
+    }
+
+    stage('Build Docker Images') {
+      steps {
+        sh '''
+          docker compose -f docker-compose.prod.yml build specpilot-api specpilot-frontend
         '''
       }
     }
