@@ -20,7 +20,8 @@ pipeline {
     stage('Docker Compose Config') {
       steps {
         sh '''
-          docker compose -f docker-compose.prod.yml config
+          cp .env.production.example .env.production
+          docker compose -f docker-compose.prod.yml --env-file .env.production config
         '''
       }
     }
@@ -28,7 +29,7 @@ pipeline {
     stage('Build Docker Images') {
       steps {
         sh '''
-          docker compose -f docker-compose.prod.yml build specpilot-api specpilot-frontend
+          docker compose -f docker-compose.prod.yml --env-file .env.production build specpilot-api specpilot-frontend
         '''
       }
     }
