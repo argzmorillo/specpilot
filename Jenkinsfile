@@ -22,6 +22,7 @@ pipeline {
         dir('backend') {
           sh '''
             npm ci
+            npx prisma generate
             npm run build
             npm run test
           '''
