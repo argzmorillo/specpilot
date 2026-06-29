@@ -52,7 +52,7 @@ pipeline {
           git checkout main
           git pull origin main
 
-          docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build specpilot-api specpilot-frontend nginx
+          docker compose -f docker-compose.prod.yml --env-file .env.production up -d --build specpilot-api specpilot-frontend
 
           docker compose -f docker-compose.prod.yml --env-file .env.production exec -T specpilot-api npx prisma migrate deploy
 
