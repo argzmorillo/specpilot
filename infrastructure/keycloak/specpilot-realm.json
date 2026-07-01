@@ -34,10 +34,10 @@
       "protocol": "openid-connect",
       "standardFlowEnabled": true,
       "directAccessGrantsEnabled": true,
-      "redirectUris": ["http://localhost:4200/*"],
-      "webOrigins": ["http://localhost:4200"],
+      "redirectUris": ["http://localhost:4200/*", "https://specpilot.adrianmorillo.com/*"],
+      "webOrigins": ["http://localhost:4200", "https://specpilot.adrianmorillo.com/*"],
       "attributes": {
-        "post.logout.redirect.uris": "http://localhost:4200/*"
+        "post.logout.redirect.uris": "http://localhost:4200/*##https://specpilot.adrianmorillo.com/*"
       }
     },
     {
