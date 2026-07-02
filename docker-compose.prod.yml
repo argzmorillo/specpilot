@@ -55,7 +55,6 @@ services:
       # Reverse proxy configuration
       KC_HTTP_ENABLED: true
       KC_HOSTNAME: auth.adrianmorillo.com
-      KC_HOSTNAME_PORT: 443
       KC_PROXY_HEADERS: xforwarded
     volumes:
       - ./infrastructure/keycloak:/opt/keycloak/data/import
