@@ -11,10 +11,28 @@ The platform generates:
 - Open questions for requirement clarification
 
 SpecPilot AI is the first application of a broader portfolio ecosystem featuring shared authentication, centralized access management, microservice-based applications and cloud deployment.
+The platform is currently deployed in a production-like private beta environment featuring Dockerized services, centralized authentication, HTTPS, automated CI/CD pipelines and production-oriented infrastructure.
+
+## Architecture Overview
+
+```text
+                Internet
+                     │
+                     ▼
+              NGINX Reverse Proxy
+                     │
+ ┌─────────────┬──────────────┬──────────────┬──────────────┐
+ ▼             ▼              ▼              ▼
+
+Frontend      Backend      Keycloak      Jenkins
+                  │
+                  ▼
+             PostgreSQL
+```
 
 ---
 
-## Current Architecture
+## Technology Stack
 
 ### Frontend
 
@@ -31,6 +49,20 @@ SpecPilot AI is the first application of a broader portfolio ecosystem featuring
 - DTO validation with class-validator
 - OpenAI integration layer
 - Modular backend structure
+
+### Infrastructure
+
+- Ubuntu Server VPS
+- Docker
+- Docker Compose
+- NGINX Reverse Proxy
+- PostgreSQL
+- Let's Encrypt
+
+### CI/CD
+
+- GitHub Actions (Continuous Integration)
+- Jenkins (Continuous Deployment)
 
 ## Authentication Architecture
 
@@ -55,6 +87,26 @@ SpecPilot supports local and production-like configuration through environment-s
 The application is designed to support multiple deployment environments without requiring source code modifications.
 
 Configuration values such as database connections, API keys, authentication endpoints and allowed origins are externalized through environment variables.
+
+## Production Infrastructure
+
+The current private beta environment is fully deployed on a production VPS using Docker Compose.
+
+Current production services include:
+
+- Angular Frontend
+- NestJS Backend
+- PostgreSQL
+- Keycloak
+- Jenkins
+- NGINX Reverse Proxy
+
+Public endpoints:
+
+- Frontend → https://specpilot.adrianmorillo.com
+- API → https://api.specpilot.adrianmorillo.com
+- Authentication → https://auth.adrianmorillo.com
+- CI/CD → https://ci.adrianmorillo.com
 
 ### Persistence Architecture
 
@@ -202,7 +254,7 @@ Current documentation:
 ### Operations
 
 - [Health Checks](docs/operations/health-checks.md)
-- [CI Pipeline](docs/operations/ci-pipeline.md)
+- [CI Pipeline](docs/deployment/ci-pipeline.md)
 
 ### Portfolio Ecosystem
 
@@ -210,15 +262,22 @@ Current documentation:
 
 ## Deployment Status
 
-Current deployment stack includes:
+The current private beta environment is fully deployed and operational.
 
+Current production infrastructure:
+
+- Ubuntu VPS
+- Docker Compose
 - Angular Frontend
 - NestJS Backend
 - PostgreSQL
 - Keycloak
-- Docker Compose orchestration
-
-The platform can currently be executed locally through the production-oriented Docker stack used as the foundation for future VPS deployment.
+- NGINX Reverse Proxy
+- HTTPS
+- Jenkins
+- JWT Authentication
+- Role-Based Access Control (RBAC)
+- Production CI/CD Pipeline
 
 ## Current Features
 
@@ -232,6 +291,11 @@ The platform can currently be executed locally through the production-oriented D
 - CI pipeline with automated testing
 - Mocked OpenAI testing strategy
 - Modular backend architecture
+- Keycloak authentication
+- Role-Based Access Control (RBAC)
+- HTTPS infrastructure
+- Production deployment pipeline
+- Jenkins deployment automation
 
 ---
 
@@ -248,6 +312,19 @@ SpecPilot separates automated CI testing from real OpenAI integration testing.
 ### Manual OpenAI Smoke Testing
 
 Real OpenAI integration is tested manually during local development using a valid `.env` configuration and local backend execution.
+
+### Production Deployment Validation
+
+Production deployments are executed through Jenkins.
+
+The deployment pipeline performs:
+
+- Docker image builds
+- Container recreation
+- Prisma migrations
+- Deployment health checks
+
+This deployment workflow is documented separately under the deployment documentation.
 
 ---
 
@@ -277,7 +354,7 @@ Future applications may use different stacks including:
 
 ---
 
-## Current Status
+## Current Project Status
 
 Current stage:
 
@@ -289,7 +366,12 @@ Current stage:
 - Historical analysis tracking enabled
 - Dockerized backend
 - Dockerized frontend
-- Production-oriented Docker Compose stack
+- Production VPS deployed
+- Docker Compose production stack operational
+- Reverse proxy configured
+- HTTPS enabled
+- Keycloak operational
+- Jenkins deployment pipeline operational
 - Keycloak authentication integration
 - JWT-based API protection
 
@@ -317,9 +399,9 @@ Current stage:
 - Access request flow
 - Protected applications
 
-### v0.5 — Deployable Private Demo
+### v0.5 — Private Beta Infrastructure
 
-- Cloud deployment
+- Production VPS deployment
 - Production-ready environment setup
 - Private access management
 
