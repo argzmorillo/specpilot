@@ -2,9 +2,9 @@
 
 ## Overview
 
-This document describes the target deployment architecture for the SpecPilot private beta environment.
+This document describes the production deployment architecture currently used by the SpecPilot private beta environment.
 
-The goal is to provide a production-like deployment model that supports the current application while remaining compatible with future ecosystem expansion.
+The architecture reflects the live infrastructure running on the production VPS and serves as the foundation for the current private beta while remaining compatible with future ecosystem expansion.
 
 The architecture prioritizes:
 
@@ -13,15 +13,16 @@ The architecture prioritizes:
 - Infrastructure simplicity
 - Containerized deployments
 - CI/CD automation
+- Production reliability
 - Future ecosystem scalability
 
 ---
 
 # Deployment Topology
 
-The private beta environment is hosted on a dedicated VPS running Ubuntu Server.
+The private beta environment is hosted on a dedicated Ubuntu Server VPS.
 
-All platform services are deployed using Docker containers and managed through Docker Compose.
+All production services are containerized using Docker and orchestrated through a single Docker Compose stack, providing reproducible deployments, simplified infrastructure management and consistent environments.
 
 Current deployment components:
 
@@ -37,31 +38,23 @@ Current deployment components:
 # High-Level Architecture
 
 ```text
-                         Internet
-                              │
-                              ▼
-                    adrianmorillo.com
-                              │
-                              ▼
+                           Internet
+                               │
+                               ▼
+                     adrianmorillo.com
+                               │
+                               ▼
                     NGINX Reverse Proxy
-                              │
-        ┌─────────────────────┼─────────────────────┐
-        │                     │                     │
-        ▼                     ▼                     ▼
+                               │
+        ┌──────────────────────┼──────────────────────┬──────────────────────┐
+        │                      │                      │                      │
+        ▼                      ▼                      ▼                      ▼
 
- specpilot.adrianmorillo.com  api.specpilot.adrianmorillo.com  auth.adrianmorillo.com
-      Angular               NestJS API              Keycloak
-
-                              │
-                              ▼
-
-                     PostgreSQL Database
-
-                              │
-                              ▼
-
-                     ci.adrianmorillo.com
-                            Jenkins
+specpilot.adrianmorillo.com  api.specpilot.adrianmorillo.com  auth.adrianmorillo.com  ci.adrianmorillo.com
+      Angular                    NestJS API                     Keycloak                 Jenkins
+                                    │
+                                    ▼
+                              PostgreSQL
 ```
 
 ---
@@ -75,10 +68,12 @@ The VPS acts as the infrastructure host for the entire private beta environment.
 Responsibilities:
 
 - Run Docker Engine
-- Host platform containers
+- Host all platform containers
 - Provide network access
 - Provide persistent storage
 - Execute deployment workflows
+- Host TLS certificates
+- Support future ecosystem expansion
 
 ---
 
@@ -92,6 +87,8 @@ Responsibilities:
 - Reverse proxy routing
 - Security headers
 - Request forwarding
+- Domain routing
+- TLS certificate usage
 - Optional rate limiting
 - Optional response compression
 
@@ -101,7 +98,7 @@ Benefits:
 - Production-proven architecture
 - Fine-grained routing control
 - Compatible with Let's Encrypt
-- Widely used in enterprise environments
+- Widely adopted in enterprise environments
 
 ---
 
@@ -120,7 +117,7 @@ Responsibilities:
 - Access request workflow
 - API communication
 
-The frontend does not contain business logic or authentication ownership.
+The frontend does not own business logic, authorization or user credentials.
 
 ---
 
@@ -140,7 +137,7 @@ Responsibilities:
 - Access management
 - Authorization enforcement
 
-The backend validates JWT tokens issued by Keycloak.
+The backend validates JWT access tokens issued by Keycloak and enforces Role-Based Access Control (RBAC).
 
 ---
 
@@ -150,12 +147,19 @@ Internal service only.
 
 Responsibilities:
 
-- Analysis persistence
+- Application persistence
+- Analysis storage
 - Usage tracking
+- Keycloak persistence
 - Future access request storage
 - Future ecosystem data
 
-PostgreSQL is not exposed publicly.
+Current production databases:
+
+- specpilot
+- keycloak
+
+PostgreSQL is never exposed publicly.
 
 ---
 
@@ -163,7 +167,9 @@ PostgreSQL is not exposed publicly.
 
 Subdomain:
 
+```text
 auth.adrianmorillo.com
+```
 
 Responsibilities:
 
@@ -174,15 +180,15 @@ Responsibilities:
 - Token issuing
 - Single Sign-On (SSO)
 
-Keycloak acts as the centralized Identity Provider for the ecosystem.
+Keycloak acts as the centralized Identity Provider for the entire ecosystem.
 
----
-
-## Current Keycloak Configuration
+### Current Configuration
 
 Current realm:
 
+```text
 specpilot
+```
 
 Current clients:
 
@@ -194,15 +200,19 @@ Current application roles:
 - specpilot_user
 - specpilot_admin
 
-The realm configuration is versioned inside the repository:
+The realm configuration is versioned inside:
 
+```text
 infrastructure/keycloak/specpilot-realm.json
+```
 
 The Angular frontend authenticates users through OpenID Connect (OIDC).
 
-The NestJS backend validates JWT access tokens issued by Keycloak and extracts application roles from the token payload.
+The NestJS backend validates JWT access tokens issued by Keycloak and extracts application roles directly from the token payload.
 
-User accounts are managed through the Keycloak Administration Console and are not versioned inside the repository.
+All users, sessions, roles and realm state are persisted inside PostgreSQL.
+
+The realm is imported only during initial infrastructure provisioning. Subsequent container restarts reuse the persisted database state without re-importing the realm, preserving all production users and configuration.
 
 ---
 
@@ -217,10 +227,18 @@ ci.adrianmorillo.com
 Responsibilities:
 
 - Build automation
-- Test execution
-- Deployment automation
+- Continuous Integration
+- Docker image builds
+- Continuous Deployment
+- Deployment validation
 
-Jenkins supports the CI/CD pipeline used to deploy SpecPilot.
+Current deployment capabilities:
+
+- Build Backend Docker image
+- Build Frontend Docker image
+- Deploy production containers
+- Execute production database migrations
+- Validate deployment through health checks
 
 ---
 
@@ -230,7 +248,7 @@ Jenkins supports the CI/CD pipeline used to deploy SpecPilot.
 
 Owns:
 
-- UI
+- User interface
 - Navigation
 - Session initialization
 
@@ -249,11 +267,12 @@ Owns:
 - Business logic
 - Domain rules
 - Authorization
+- AI integrations
 
 Does not own:
 
 - User credentials
-- Session management
+- Session lifecycle
 
 ---
 
@@ -265,10 +284,11 @@ Owns:
 - Users
 - Roles
 - Sessions
+- Token generation
 
 Does not own:
 
-- Application data
+- Application business data
 
 ---
 
@@ -276,37 +296,114 @@ Does not own:
 
 Owns:
 
-- Application persistence
+- Persistent application data
+- Authentication persistence
 
 Does not own:
 
-- Authentication state
+- Authentication logic
 
 ---
 
 # Networking Strategy
 
-Public services:
+The infrastructure is divided into two Docker networks.
+
+## Public Network
 
 ```text
-specpilot.adrianmorillo.com
-api.specpilot.adrianmorillo.com
-auth.adrianmorillo.com
-ci.adrianmorillo.com
+specpilot-public
 ```
 
-Internal services:
+Contains services exposed through NGINX.
+
+Services:
+
+- Frontend
+- Backend
+- Keycloak
+- Jenkins
+- NGINX
+
+---
+
+## Private Network
 
 ```text
-postgres
-docker networks
+specpilot-private
 ```
+
+Contains internal-only communication.
+
+Services:
+
+- PostgreSQL
+- Backend
+- Keycloak
+- Jenkins
+
+Database traffic never leaves the private Docker network.
 
 Only NGINX exposes services to the Internet.
 
-NGINX routes traffic to the appropriate internal service based on the requested domain or subdomain.
+NGINX routes traffic to the appropriate service based on the requested domain.
 
-Internal services communicate exclusively through Docker networks.
+---
+
+# Security Model
+
+The production environment follows a layered security model.
+
+Security measures include:
+
+- HTTPS termination at NGINX
+- Reverse proxy isolation
+- Internal Docker networking
+- PostgreSQL not publicly accessible
+- JWT validation inside the backend
+- Centralized authentication through Keycloak
+- Role-Based Access Control (RBAC)
+- Security headers configured at the reverse proxy
+- Persistent authentication stored in PostgreSQL
+
+---
+
+# Deployment Strategy
+
+Deployment flow:
+
+```text
+Developer
+    │
+    ▼
+GitHub Repository
+    │
+    ▼
+Jenkins Pipeline
+    │
+    ▼
+Checkout latest revision
+    │
+    ▼
+Build Docker images
+    │
+    ▼
+Optional Production Deployment
+    │
+    ▼
+Docker Compose
+    │
+    ▼
+Prisma Migrations
+    │
+    ▼
+Health Check Validation
+    │
+    ▼
+Production Environment
+```
+
+The deployment process is reproducible, automated and designed to minimize manual intervention while preserving persistent production data.
 
 ---
 
@@ -314,15 +411,13 @@ Internal services communicate exclusively through Docker networks.
 
 The deployment architecture is intentionally designed to support future applications.
 
-Future ecosystem services may include:
-
-Frontend:
+Potential frontend services:
 
 - Portfolio Platform
 - Vue Applications
 - React Applications
 
-Backend:
+Potential backend services:
 
 - Spring Boot APIs
 - FastAPI Services
@@ -344,57 +439,32 @@ auth.adrianmorillo.com
 ci.adrianmorillo.com
 ```
 
-All future applications will reuse:
+Future applications will reuse:
 
 - Keycloak
 - PostgreSQL strategy
 - CI/CD infrastructure
 - Deployment model
 - Domain management
-
----
-
-# Deployment Strategy
-
-Deployment flow:
-
-```text
-Developer
-    │
-    ▼
-GitHub
-    │
-    ▼
-Jenkins Pipeline
-    │
-    ▼
-Docker Build
-    │
-    ▼
-Docker Compose Deployment
-    │
-    ▼
-Production VPS
-```
-
-The deployment process remains reproducible, automated and compatible with future ecosystem expansion.
+- Reverse proxy architecture
 
 ---
 
 # Long-Term Vision
 
-SpecPilot is the first application of a broader portfolio ecosystem.
+SpecPilot is the first application within a broader portfolio ecosystem.
 
-The deployment architecture is designed to demonstrate:
+Although SpecPilot is currently the only production application, every infrastructure decision has been made with ecosystem scalability as the primary design goal.
+
+The deployment architecture demonstrates:
 
 - Enterprise deployment practices
 - Shared authentication
+- Centralized identity management
 - CI/CD automation
 - Containerized infrastructure
-- Cross-application scalability
 - Production-oriented architecture
+- Cross-application scalability
 - Centralized reverse proxy architecture
-
-```
-
-```
+- Secure authentication and authorization
+- Reproducible deployments

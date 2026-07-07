@@ -2,102 +2,234 @@
 
 ## Overview
 
-SpecPilot provides a production-oriented Docker Compose stack for running the private beta platform services together.
+SpecPilot uses a production-oriented Docker Compose stack to orchestrate the complete private beta environment.
 
-The stack defines:
+The stack defines every service required to operate the platform, including application services, authentication, persistence, reverse proxy and deployment automation.
 
-- SpecPilot frontend
-- SpecPilot backend API
+Current services include:
+
+- Angular Frontend
+- NestJS Backend API
 - PostgreSQL
 - Keycloak
-- Docker networks
-- Persistent volumes
+- Jenkins
+- NGINX Reverse Proxy
+
+All services are deployed together using a single Docker Compose configuration.
 
 ---
 
-## Services
+# Service Overview
 
-### specpilot-frontend
+## specpilot-frontend
 
-Angular production build served through Nginx.
+Angular production build served through NGINX.
 
-Exposed locally on:
+Public endpoint:
 
 ```text
-http://localhost:4200
+https://specpilot.adrianmorillo.com
 ```
 
-### specpilot-api
+Responsibilities:
+
+- User interface
+- Authentication initiation
+- API communication
+
+---
+
+## specpilot-api
 
 NestJS backend API.
 
-Exposed locally on:
+Public endpoint:
 
 ```text
-http://localhost:3000
+https://api.specpilot.adrianmorillo.com
 ```
 
-The API connects internally to PostgreSQL through the Docker network.
+Responsibilities:
 
-### postgres
+- Business logic
+- OpenAI integration
+- Authorization
+- Analysis persistence
 
-PostgreSQL database used by the backend for persistence.
+The API communicates internally with PostgreSQL and Keycloak through Docker networks.
 
-This service is internal and is not exposed publicly.
+---
 
-Data is persisted through the `specpilot_postgres_data` Docker volume.
+## postgres
 
-### keycloak
+Internal PostgreSQL database.
 
-Keycloak Identity Provider used for local stack authentication testing.
+Responsibilities:
 
-Exposed locally on:
+- SpecPilot application persistence
+- Keycloak persistence
+
+Current databases:
+
+- specpilot
+- keycloak
+
+This service is never exposed publicly.
+
+Persistent data is stored inside:
 
 ```text
-http://localhost:8080
+specpilot_postgres_data
 ```
 
 ---
 
-## Networks
+## keycloak
 
-The stack defines two Docker networks.
+Centralized Identity Provider.
 
-### specpilot-public
+Public endpoint:
 
-Used by services that need to be reachable by public-facing components.
+```text
+https://auth.adrianmorillo.com
+```
 
-### specpilot-private
+Responsibilities:
 
-Internal network used for backend-to-database and backend-to-internal-service communication.
+- Authentication
+- Authorization
+- Role management
+- Session management
+- OpenID Connect (OIDC)
 
-PostgreSQL is attached only to the private network.
+Keycloak stores its persistent data inside PostgreSQL.
 
 ---
 
-## Volumes
+## jenkins
 
-### specpilot_postgres_data
+Continuous Integration and Continuous Deployment server.
+
+Public endpoint:
+
+```text
+https://ci.adrianmorillo.com
+```
+
+Responsibilities:
+
+- Docker image builds
+- Deployment automation
+- Infrastructure validation
+- Production deployments
+
+Persistent data is stored inside:
+
+```text
+specpilot_jenkins_data
+```
+
+---
+
+## nginx
+
+Public reverse proxy.
+
+Responsibilities:
+
+- HTTPS termination
+- Reverse proxy routing
+- Security headers
+- Domain routing
+
+NGINX is the only container directly exposed to the Internet.
+
+---
+
+# Docker Networks
+
+The production stack is divided into two Docker networks.
+
+## specpilot-public
+
+Public-facing network.
+
+Connected services:
+
+- specpilot-frontend
+- specpilot-api
+- keycloak
+- jenkins
+- nginx
+
+NGINX forwards external requests to these services.
+
+---
+
+## specpilot-private
+
+Internal infrastructure network.
+
+Connected services:
+
+- specpilot-api
+- postgres
+- keycloak
+- jenkins
+
+Database traffic never leaves this network.
+
+---
+
+# Persistent Volumes
+
+## specpilot_postgres_data
 
 Stores PostgreSQL data.
 
-This allows database data to survive container restarts and image rebuilds.
+Persists:
+
+- SpecPilot database
+- Keycloak database
 
 ---
 
-## Environment Variables
+## specpilot_jenkins_data
 
-The stack expects a local `.env.production` file based on:
+Stores Jenkins state.
+
+Persists:
+
+- Configuration
+- Users
+- Plugins
+- Credentials
+- Build history
+- Pipeline definitions
+
+---
+
+# Environment Variables
+
+The production stack expects:
+
+```text
+.env.production
+```
+
+A template is provided:
 
 ```text
 .env.production.example
 ```
 
-Production secrets must not be committed to Git.
+Only the template is versioned.
+
+Production secrets remain outside the repository.
 
 ---
 
-## Start Stack
+# Start Stack
 
 From the repository root:
 
@@ -107,7 +239,7 @@ docker compose -f docker-compose.prod.yml --env-file .env.production up -d --bui
 
 ---
 
-## Stop Stack
+# Stop Stack
 
 ```bash
 docker compose -f docker-compose.prod.yml --env-file .env.production down
@@ -115,36 +247,68 @@ docker compose -f docker-compose.prod.yml --env-file .env.production down
 
 ---
 
-## Validate Services
+# Restart Stack
 
-Frontend:
-
-```text
-http://localhost:4200
-```
-
-Backend:
-
-```text
-http://localhost:3000
-```
-
-Keycloak:
-
-```text
-http://localhost:8080
+```bash
+docker compose -f docker-compose.prod.yml --env-file .env.production up -d
 ```
 
 ---
 
-## Production Notes
+# Validate Running Services
 
-This stack provides the service topology and internal networking foundation for the private beta environment.
+Verify running containers:
 
-Future issues will harden the stack with:
+```bash
+docker ps
+```
 
+Verify stack status:
+
+```bash
+docker compose -f docker-compose.prod.yml ps
+```
+
+Validate frontend:
+
+```text
+https://specpilot.adrianmorillo.com
+```
+
+Validate backend:
+
+```text
+https://api.specpilot.adrianmorillo.com/health
+```
+
+Validate Keycloak:
+
+```text
+https://auth.adrianmorillo.com
+```
+
+Validate Jenkins:
+
+```text
+https://ci.adrianmorillo.com
+```
+
+---
+
+# Production Notes
+
+The Docker Compose stack represents the complete production topology of the SpecPilot private beta environment.
+
+Every service is deployed as an independent container while remaining connected through controlled Docker networks.
+
+The stack provides:
+
+- Containerized infrastructure
+- Persistent storage
+- Centralized authentication
+- CI/CD integration
 - Reverse proxy routing
-- HTTPS
-- Production Keycloak configuration
-- Jenkins deployment automation
-- Backup strategy
+- Secure HTTPS communication
+- Production-ready service orchestration
+
+Future ecosystem applications will reuse the same deployment strategy and infrastructure model.
