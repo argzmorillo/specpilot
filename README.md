@@ -240,6 +240,7 @@ Current documentation:
 - [Environment Configuration](docs/architecture/environment-configuration.md)
 - [Deployment Architecture](docs/architecture/deployment-architecture.md)
 - [PostgreSQL Persistence](docs/architecture/postgresql-persistence.md)
+- [Access Request Domain](docs/architecture/access-request-domain.md)
 
 ### Deployment
 

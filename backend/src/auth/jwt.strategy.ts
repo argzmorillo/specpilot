@@ -8,6 +8,7 @@ import { extractRolesFromToken } from './utils/extract-roles.util';
 interface KeycloakJwtPayload {
   sub: string;
   email?: string;
+  name?: string;
   preferred_username?: string;
   realm_access?: {
     roles?: string[];
@@ -52,6 +53,7 @@ export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
     return {
       sub: payload.sub,
       email: payload.email,
+      name: payload.name,
       username: payload.preferred_username,
       roles: extractRolesFromToken(payload),
     };
