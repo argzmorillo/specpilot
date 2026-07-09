@@ -176,3 +176,117 @@ Assign Keycloak Role
    ▼
 Application Access Granted
 ```
+
+---
+
+# API Contract
+
+The Access Request API exposes the minimum backend contract required for the private beta onboarding workflow.
+
+The API is protected by JWT authentication. User identity is extracted from the authenticated Keycloak token, not from the request body.
+
+---
+
+## POST `/access-requests`
+
+Creates a new access request for the authenticated user.
+
+### Request body
+
+```json
+{
+  "message": "I would like to test SpecPilot."
+}
+```
+
+`message` is optional.
+
+The backend automatically assigns:
+
+- Keycloak user id
+- Email
+- Full name
+- Target application: `SPECPILOT`
+- Initial status: `PENDING`
+
+### Response
+
+```json
+{
+  "id": "access-request-id",
+  "keycloakUserId": "keycloak-user-id",
+  "email": "user@example.com",
+  "fullName": "User Name",
+  "requestedApplication": "SPECPILOT",
+  "status": "PENDING",
+  "message": "I would like to test SpecPilot.",
+  "adminNotes": null,
+  "reviewedAt": null,
+  "reviewedByUserId": null,
+  "approvedRole": null,
+  "createdAt": "2026-07-02T00:00:00.000Z",
+  "updatedAt": "2026-07-02T00:00:00.000Z"
+}
+```
+
+### Errors
+
+| Status             | Reason                                                      |
+| ------------------ | ----------------------------------------------------------- |
+| `400 Bad Request`  | Invalid request body                                        |
+| `401 Unauthorized` | Missing or invalid JWT                                      |
+| `409 Conflict`     | Access request already exists for this user and application |
+
+---
+
+## GET `/access-requests/me`
+
+Returns the current authenticated user's access request for SpecPilot.
+
+### Response when request exists
+
+```json
+{
+  "id": "access-request-id",
+  "keycloakUserId": "keycloak-user-id",
+  "email": "user@example.com",
+  "fullName": "User Name",
+  "requestedApplication": "SPECPILOT",
+  "status": "PENDING",
+  "message": "I would like to test SpecPilot.",
+  "adminNotes": null,
+  "reviewedAt": null,
+  "reviewedByUserId": null,
+  "approvedRole": null,
+  "createdAt": "2026-07-02T00:00:00.000Z",
+  "updatedAt": "2026-07-02T00:00:00.000Z"
+}
+```
+
+### Response when request does not exist
+
+```json
+null
+```
+
+### Errors
+
+| Status             | Reason                 |
+| ------------------ | ---------------------- |
+| `401 Unauthorized` | Missing or invalid JWT |
+
+---
+
+# API Validation Rules
+
+The API follows these rules:
+
+- The user must be authenticated.
+- User identity is always extracted from the JWT.
+- The request body cannot override user identity.
+- The request body cannot set request status.
+- The request body cannot select the target application.
+- The target application is currently fixed to `SPECPILOT`.
+- A user can only create one request for SpecPilot.
+- The optional `message` field must be a string.
+- The optional `message` field must not exceed 1000 characters.

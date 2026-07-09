@@ -7,6 +7,7 @@ import { PrismaModule } from './prisma/prisma.module';
 import { AnalysisModule } from './analysis/analysis.module';
 import { AuthModule } from './auth/auth.module';
 import { HealthModule } from './health/health.module';
+import { AccessRequestModule } from './access-request/access-request.module';
 
 @Module({
   imports: [
@@ -18,6 +19,8 @@ import { HealthModule } from './health/health.module';
     AnalysisModule,
     AuthModule,
     HealthModule,
+    AccessRequestModule,
+    AccessRequestModule,
   ],
   controllers: [AppController],
   providers: [AppService],
