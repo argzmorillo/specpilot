@@ -103,4 +103,31 @@ describe('AccessRequestService', () => {
 
     expect(result).toEqual(accessRequest);
   });
+
+  it('creates an access request without a message', async () => {
+    accessRequestRepositoryMock.findByUserAndApplication.mockResolvedValue(null);
+    accessRequestRepositoryMock.create.mockResolvedValue({
+      ...accessRequest,
+      message: null,
+    });
+
+    await service.create(user, {});
+
+    expect(accessRequestRepositoryMock.create).toHaveBeenCalledWith({
+      keycloakUserId: user.sub,
+      email: user.email,
+      fullName: user.name,
+      requestedApplication: RequestedApplication.SPECPILOT,
+      status: AccessRequestStatus.PENDING,
+      message: undefined,
+    });
+  });
+
+  it('returns null when the user has no access request', async () => {
+    accessRequestRepositoryMock.findByUserAndApplication.mockResolvedValue(null);
+
+    const result = await service.findMine(user);
+
+    expect(result).toBeNull();
+  });
 });

@@ -1,25 +1,33 @@
-import { Component, computed, inject, OnInit, signal } from '@angular/core';
-import { AnalysisService } from '../../services/analysis.service';
-import { AnalyzeResult } from '../../models/analyze-result.model';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import {
+  BookOpen,
+  Eraser,
+  FileText,
+  ListChecks,
+  LucideAngularModule,
+  Menu,
+  RotateCcw,
+  TriangleAlert,
+  X,
+} from 'lucide-angular';
+
+import { AuthService } from '../../../../auth/auth.service';
+import { ButtonComponent } from '../../../../shared/components/button/button.component';
 import { ListCardComponent } from '../../../../shared/components/list-card/list-card.component';
 import { SummaryCardComponent } from '../../../../shared/components/summary-card/summary-card.component';
-import { ButtonComponent } from '../../../../shared/components/button/button.component';
-import {
-  Eraser,
-  RotateCcw,
-  FileText,
-  BookOpen,
-  ListChecks,
-  TriangleAlert,
-  Menu,
-  X,
-  LucideAngularModule,
-} from 'lucide-angular';
-import { AnalysisHistoryItem } from '../../models/analysis-history-item.model';
-import { SidebarComponent } from '../../../../shared/layout/sidebar/sidebar.component';
 import { MobileHeaderComponent } from '../../../../shared/layout/mobile-header/mobile-header.component';
-import { AuthService } from '../../../../auth/auth.service';
+import { SidebarComponent } from '../../../../shared/layout/sidebar/sidebar.component';
+import { AnalysisHistoryItem } from '../../models/analysis-history-item.model';
+import { AnalyzeResult } from '../../models/analyze-result.model';
+import { AnalysisService } from '../../services/analysis.service';
 
 @Component({
   selector: 'app-analysis-page',
@@ -34,10 +42,12 @@ import { AuthService } from '../../../../auth/auth.service';
   ],
   templateUrl: './analysis-page.component.html',
   styleUrl: './analysis-page.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AnalysisPageComponent implements OnInit {
   private readonly analysisService = inject(AnalysisService);
   private readonly authService = inject(AuthService);
+
   readonly maxInputLength = 10000;
 
   readonly fileTextIcon = FileText;
@@ -46,23 +56,34 @@ export class AnalysisPageComponent implements OnInit {
   readonly triangleAlertIcon = TriangleAlert;
   readonly eraserIcon = Eraser;
   readonly rotateCcwIcon = RotateCcw;
+  readonly menuIcon = Menu;
+  readonly closeIcon = X;
 
   readonly history = signal<AnalysisHistoryItem[]>([]);
-  readonly historyLoading = signal<boolean>(false);
+  readonly historyLoading = signal(false);
   readonly historyError = signal<string | null>(null);
   readonly selectedHistoryItemId = signal<string | null>(null);
 
   readonly mobileMenuOpen = signal(false);
-  readonly menuIcon = Menu;
-  readonly closeIcon = X;
 
   readonly username = computed(() => this.authService.getUsername() ?? 'Usuario');
-  readonly userInitial = computed(() => this.username()?.charAt(0).toUpperCase() ?? 'U');
 
-  text = signal('');
-  result = signal<AnalyzeResult | null>(null);
-  loading = signal(false);
-  error = signal<string | null>(null);
+  readonly userInitial = computed(() => this.username().charAt(0).toUpperCase() || 'U');
+
+  readonly text = signal('');
+  readonly result = signal<AnalyzeResult | null>(null);
+  readonly loading = signal(false);
+  readonly error = signal<string | null>(null);
+
+  readonly inputLength = computed(() => this.text().length);
+
+  readonly isInputEmpty = computed(() => !this.text().trim());
+
+  readonly isInputTooLong = computed(() => this.inputLength() > this.maxInputLength);
+
+  readonly isAnalyzeDisabled = computed(
+    () => this.isInputEmpty() || this.isInputTooLong() || this.loading(),
+  );
 
   ngOnInit(): void {
     this.loadHistory();
@@ -87,6 +108,7 @@ export class AnalysisPageComponent implements OnInit {
   selectHistoryItem(item: AnalysisHistoryItem): void {
     this.selectedHistoryItemId.set(item.id);
     this.text.set(item.inputText);
+
     this.result.set({
       summary: item.summary,
       userStories: item.userStories,
@@ -94,6 +116,7 @@ export class AnalysisPageComponent implements OnInit {
       risks: item.risks,
       questions: item.questions,
     });
+
     this.error.set(null);
   }
 
@@ -133,17 +156,8 @@ export class AnalysisPageComponent implements OnInit {
     this.text.set('');
     this.result.set(null);
     this.error.set(null);
+    this.selectedHistoryItemId.set(null);
   }
-
-  readonly inputLength = computed(() => this.text().length);
-
-  readonly isInputEmpty = computed(() => !this.text().trim());
-
-  readonly isInputTooLong = computed(() => this.inputLength() > this.maxInputLength);
-
-  readonly isAnalyzeDisabled = computed(
-    () => this.isInputEmpty() || this.isInputTooLong() || this.loading(),
-  );
 
   logout(): void {
     void this.authService.logout();

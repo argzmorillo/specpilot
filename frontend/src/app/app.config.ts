@@ -20,7 +20,7 @@ export const appConfig: ApplicationConfig = {
     provideKeycloak({
       config: {
         url: environment.keycloakUrl,
-        realm: 'specpilot',
+        realm: 'ecosystem',
         clientId: 'specpilot-frontend',
       },
       initOptions: {

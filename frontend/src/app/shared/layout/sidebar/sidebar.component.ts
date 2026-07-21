@@ -1,6 +1,7 @@
 import { DatePipe } from '@angular/common';
-import { Component, input, output } from '@angular/core';
+import { ChangeDetectionStrategy, Component, input, output } from '@angular/core';
 import { LucideAngularModule, LucideIconData } from 'lucide-angular';
+
 import { AnalysisHistoryItem } from '../../../features/analysis/models/analysis-history-item.model';
 
 @Component({
@@ -8,9 +9,12 @@ import { AnalysisHistoryItem } from '../../../features/analysis/models/analysis-
   imports: [DatePipe, LucideAngularModule],
   templateUrl: './sidebar.component.html',
   styleUrl: './sidebar.component.css',
+  changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class SidebarComponent {
-  readonly history = input.required<AnalysisHistoryItem[]>();
+  readonly showAnalysisNavigation = input<boolean>(true);
+
+  readonly history = input<AnalysisHistoryItem[]>([]);
   readonly historyLoading = input<boolean>(false);
   readonly historyError = input<string | null>(null);
   readonly selectedHistoryItemId = input<string | null>(null);
@@ -18,33 +22,34 @@ export class SidebarComponent {
   readonly isMobile = input<boolean>(false);
   readonly closeIcon = input<LucideIconData | null>(null);
 
+  readonly username = input<string>('Usuario');
+  readonly userInitial = input<string>('U');
+
   readonly newAnalysis = output<void>();
   readonly selectHistory = output<AnalysisHistoryItem>();
   readonly closeMenu = output<void>();
-
-  readonly username = input<string>('Usuario');
-  readonly userInitial = input<string>('U');
   readonly logout = output<void>();
 
-  onNewAnalysis() {
+  onNewAnalysis(): void {
     this.newAnalysis.emit();
-
-    if (this.isMobile()) {
-      this.closeMenu.emit();
-    }
+    this.closeMobileSidebar();
   }
 
   onSelectHistory(item: AnalysisHistoryItem): void {
     this.selectHistory.emit(item);
-
-    if (this.isMobile()) {
-      this.closeMenu.emit();
-    }
+    this.closeMobileSidebar();
   }
 
   onLogout(): void {
     this.logout.emit();
+    this.closeMobileSidebar();
+  }
 
+  onCloseMenu(): void {
+    this.closeMenu.emit();
+  }
+
+  private closeMobileSidebar(): void {
     if (this.isMobile()) {
       this.closeMenu.emit();
     }
