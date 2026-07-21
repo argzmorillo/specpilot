@@ -1,0 +1,33 @@
+<div>
+  <app-mobile-header [menuIcon]="menuIcon" (openMenu)="layoutStore.openMobileMenu()" />
+
+  <div class="hidden lg:fixed lg:left-0 lg:top-0 lg:block lg:h-screen lg:w-[260px]">
+    <app-sidebar [username]="username()" [userInitial]="userInitial()" (logout)="logout()">
+      @if (layoutStore.sidebarComponent(); as sidebarComponent) {
+        <ng-container *ngComponentOutlet="sidebarComponent" />
+      }
+    </app-sidebar>
+  </div>
+
+  @if (layoutStore.mobileMenuOpen()) {
+    <div class="fixed inset-0 z-50 lg:hidden">
+      <app-sidebar
+        class="block h-full"
+        [isMobile]="true"
+        [closeIcon]="closeIcon"
+        [username]="username()"
+        [userInitial]="userInitial()"
+        (closeMenu)="layoutStore.closeMobileMenu()"
+        (logout)="logout()"
+      >
+        @if (layoutStore.sidebarComponent(); as sidebarComponent) {
+          <ng-container *ngComponentOutlet="sidebarComponent; inputs: mobileSidebarInputs" />
+        }
+      </app-sidebar>
+    </div>
+  }
+
+  <main class="min-h-screen p-5 lg:ml-[260px] lg:p-10">
+    <router-outlet />
+  </main>
+</div>

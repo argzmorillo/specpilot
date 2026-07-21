@@ -10,12 +10,9 @@ import {
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { FormControl, ReactiveFormsModule, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
-import { Info, LucideAngularModule, Menu, RefreshCcw, Send, UserRound, X } from 'lucide-angular';
+import { Info, LucideAngularModule, RefreshCcw, Send, UserRound } from 'lucide-angular';
 
-import { AuthService } from '../../../../auth/auth.service';
 import { ButtonComponent } from '../../../../shared/components/button/button.component';
-import { MobileHeaderComponent } from '../../../../shared/layout/mobile-header/mobile-header.component';
-import { SidebarComponent } from '../../../../shared/layout/sidebar/sidebar.component';
 import { RequestStatusComponent } from '../../components/request-status/request-status.component';
 import { AccessRequest } from '../../models/access-request.model';
 import { AccessRequestService } from '../../services/access-request.service';
@@ -27,54 +24,42 @@ type VisibleAccessRequestStatus = 'PENDING' | 'REJECTED';
 @Component({
   selector: 'app-access-request-page',
   standalone: true,
-  imports: [
-    ReactiveFormsModule,
-    ButtonComponent,
-    MobileHeaderComponent,
-    SidebarComponent,
-    RequestStatusComponent,
-    LucideAngularModule,
-  ],
+  imports: [ReactiveFormsModule, ButtonComponent, RequestStatusComponent, LucideAngularModule],
   templateUrl: './access-request-page.component.html',
   styleUrl: './access-request-page.component.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class AccessRequestPageComponent {
   private readonly accessRequestService = inject(AccessRequestService);
-  private readonly authService = inject(AuthService);
   private readonly router = inject(Router);
   private readonly destroyRef = inject(DestroyRef);
 
-  readonly maxMessageLength = 1000;
+  protected readonly maxMessageLength = 1000;
 
-  readonly menuIcon = Menu;
-  readonly closeIcon = X;
-  readonly sendIcon = Send;
-  readonly userIcon = UserRound;
-  readonly infoIcon = Info;
-  readonly retryIcon = RefreshCcw;
+  protected readonly sendIcon = Send;
+  protected readonly userIcon = UserRound;
+  protected readonly infoIcon = Info;
+  protected readonly retryIcon = RefreshCcw;
 
-  readonly state = signal<AccessRequestPageState>('loading');
-  readonly request = signal<AccessRequest | null>(null);
-  readonly error = signal<string | null>(null);
-  readonly mobileMenuOpen = signal(false);
-  readonly messageValue = signal('');
+  protected readonly state = signal<AccessRequestPageState>('loading');
 
-  readonly username = computed(() => this.authService.getUsername() ?? 'Usuario');
+  protected readonly request = signal<AccessRequest | null>(null);
 
-  readonly userInitial = computed(() => this.username().charAt(0).toUpperCase() || 'U');
+  protected readonly error = signal<string | null>(null);
 
-  readonly messageLength = computed(() => this.messageValue().length);
+  protected readonly messageValue = signal('');
 
-  readonly submitting = computed(() => this.state() === 'submitting');
+  protected readonly messageLength = computed(() => this.messageValue().length);
 
-  readonly visibleRequestStatus = computed<VisibleAccessRequestStatus | null>(() => {
+  protected readonly submitting = computed(() => this.state() === 'submitting');
+
+  protected readonly visibleRequestStatus = computed<VisibleAccessRequestStatus | null>(() => {
     const status = this.request()?.status;
 
     return status === 'PENDING' || status === 'REJECTED' ? status : null;
   });
 
-  readonly messageControl = new FormControl('', {
+  protected readonly messageControl = new FormControl('', {
     nonNullable: true,
     validators: [Validators.maxLength(this.maxMessageLength)],
   });
@@ -89,7 +74,7 @@ export class AccessRequestPageComponent {
     this.loadRequest();
   }
 
-  submit(): void {
+  protected submit(): void {
     if (this.messageControl.invalid || this.submitting()) {
       this.messageControl.markAsTouched();
       return;
@@ -113,16 +98,8 @@ export class AccessRequestPageComponent {
       });
   }
 
-  retry(): void {
+  protected retry(): void {
     this.loadRequest();
-  }
-
-  openMobileMenu(): void {
-    this.mobileMenuOpen.set(true);
-  }
-
-  closeMobileMenu(): void {
-    this.mobileMenuOpen.set(false);
   }
 
   private loadRequest(): void {
@@ -144,6 +121,7 @@ export class AccessRequestPageComponent {
         },
         error: (httpError: HttpErrorResponse) => {
           this.error.set(this.resolveLoadError(httpError));
+
           this.state.set('error');
         },
       });
