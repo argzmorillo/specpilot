@@ -3,6 +3,7 @@
 
   <div class="hidden lg:fixed lg:left-0 lg:top-0 lg:block lg:h-screen lg:w-[260px]">
     <app-sidebar
+      [showAnalysisNavigation]="true"
       [history]="history()"
       [historyLoading]="historyLoading()"
       [historyError]="historyError()"
@@ -19,14 +20,17 @@
     <div class="fixed inset-0 z-50 lg:hidden">
       <app-sidebar
         class="block h-full"
+        [showAnalysisNavigation]="true"
         [isMobile]="true"
         [closeIcon]="closeIcon"
         [history]="history()"
         [historyLoading]="historyLoading()"
         [historyError]="historyError()"
         [selectedHistoryItemId]="selectedHistoryItemId()"
-        (newAnalysis)="clearInput(); closeMobileMenu()"
-        (selectHistory)="selectHistoryItem($event); closeMobileMenu()"
+        [username]="username()"
+        [userInitial]="userInitial()"
+        (newAnalysis)="clearInput()"
+        (selectHistory)="selectHistoryItem($event)"
         (closeMenu)="closeMobileMenu()"
         (logout)="logout()"
       />

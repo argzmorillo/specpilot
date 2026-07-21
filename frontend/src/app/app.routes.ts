@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
-import { AnalysisPageComponent } from './features/analysis/pages/analysis-page/analysis-page.component';
 import { AuthGuard } from './auth/auth.guard';
+import { AccessGuard } from './auth/access.guard';
 
 export const routes: Routes = [
   {
@@ -13,6 +13,14 @@ export const routes: Routes = [
     loadComponent: () =>
       import('./features/analysis/pages/analysis-page/analysis-page.component').then(
         (m) => m.AnalysisPageComponent,
+      ),
+    canActivate: [AuthGuard, AccessGuard],
+  },
+  {
+    path: 'access-request',
+    loadComponent: () =>
+      import('./features/access-request/pages/access-request-page/access-request-page.component').then(
+        (m) => m.AccessRequestPageComponent,
       ),
     canActivate: [AuthGuard],
   },

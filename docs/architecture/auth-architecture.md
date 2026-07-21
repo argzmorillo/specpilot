@@ -2,352 +2,132 @@
 
 ## Overview
 
-SpecPilot AI is being designed as the first application of a broader portfolio ecosystem composed of multiple frontend and backend applications built with different technologies.
+This document describes how authentication is implemented inside the SpecPilot application.
 
-The ecosystem goal is to provide:
+It focuses on the interaction between the Angular frontend, the NestJS backend and the shared Keycloak identity platform.
 
-- Shared authentication
-- Single Sign-On (SSO)
-- Centralized identity management
-- Shared access control
-- Cross-application session reuse
-- Technology-agnostic authentication flows
+For authentication concepts and architectural decisions see:
 
-To support these requirements, the authentication architecture must remain decoupled from any individual application implementation.
-
----
-
-## Executive Summary
-
-SpecPilot AI uses a centralized authentication architecture based on Keycloak and OpenID Connect (OIDC).
-
-The application acts as the first member of a future ecosystem composed of multiple frontend and backend applications sharing:
-
-- Authentication
-- Identity management
-- Single Sign-On (SSO)
-- Authorization foundations
-
-Users authenticate once through Keycloak and can access future ecosystem applications without re-authenticating.
-
-Backend APIs validate JWT access tokens issued by Keycloak and extract authenticated user information and roles for authorization purposes.
-
-This architecture was selected to demonstrate enterprise-grade authentication patterns commonly used in modern distributed systems.
-
-# Authentication Strategy
-
-## OAuth2 vs OpenID Connect (OIDC)
-
-OAuth2 is primarily an authorization framework designed to grant applications access to protected resources.
-
-However, SpecPilot requires:
-
-- User authentication
-- Shared user identity
-- Session reuse across applications
-- Centralized login
-- Single Sign-On (SSO)
-
-For this reason, OpenID Connect (OIDC) was selected as the authentication standard.
-
-OIDC extends OAuth2 by adding:
-
-- User identity
-- ID tokens
-- Authentication flows
-- Standardized login/session handling
-
-This makes OIDC more suitable for a multi-application ecosystem architecture.
-
----
-
-# Centralized Identity Strategy
-
-The ecosystem will use a centralized Identity Provider (IdP).
-
-The Identity Provider is responsible for:
-
-- User authentication
-- Session management
-- Token issuing
-- Role management
-- Identity lifecycle
-- Single Sign-On (SSO)
-
-Applications themselves will not own user credentials directly.
-
-Instead, applications trust the centralized identity provider and validate the tokens it issues.
-
----
-
-# Keycloak vs Custom Authentication
-
-## Evaluated Approaches
-
-### Custom Authentication Service
-
-Pros:
-
-- Full implementation ownership
-- Deeper low-level authentication learning
-
-Cons:
-
-- Reinvents existing IAM standards
-- Higher security risk
-- Significant implementation complexity
-- Difficult to maintain securely
-- Harder to scale across multiple applications
-
-### Keycloak
-
-Pros:
-
-- Industry-standard Identity Provider
-- Native OIDC/OAuth2 support
-- Built-in SSO support
-- Centralized user and role management
-- Multi-application compatibility
-- Compatible with Angular, Vue, React, NestJS, Spring Boot and FastAPI
-- Enterprise-oriented architecture
-
-Cons:
-
-- Additional infrastructure complexity
-- Less focus on implementing authentication internals manually
-
----
-
-# Technology Decision
-
-The ecosystem will adopt:
-
-- Keycloak as centralized Identity Provider
-- OpenID Connect (OIDC) as authentication protocol
-- JWT access tokens for API authorization
-- Shared realm architecture for future applications
-
-This approach prioritizes:
-
-- Security standards
-- Ecosystem scalability
-- Shared authentication
-- Cross-stack compatibility
-- Enterprise-oriented architecture
-
----
-
-# Ecosystem Authentication Architecture
-
-```text
-                    ┌─────────────────────┐
-                    │      Keycloak       │
-                    │ Identity Provider   │
-                    └─────────┬───────────┘
-                              │
-               OIDC / JWT / SSO
-                              │
-        ┌─────────────────────┼─────────────────────┐
-        │                     │                     │
-        ▼                     ▼                     ▼
-
-┌───────────────┐   ┌────────────────┐   ┌────────────────┐
-│ SpecPilot     │   │ Future Vue App │   │ Future React App│
-│ Angular Front │   │ Vue Frontend   │   │ React Frontend  │
-└───────┬───────┘   └────────┬───────┘   └────────┬───────┘
-        │                    │                    │
-        ▼                    ▼                    ▼
-
-┌───────────────┐   ┌────────────────┐   ┌────────────────┐
-│ NestJS API    │   │ Spring Boot API│   │ FastAPI Service │
-└───────────────┘   └────────────────┘   └────────────────┘
-```
-
----
-
-# Single Sign-On (SSO) Flow
-
-1. User accesses an application.
-2. The frontend detects that the user is not authenticated.
-3. The user is redirected to Keycloak.
-4. Keycloak authenticates the user.
-5. Keycloak returns OIDC tokens to the frontend.
-6. The frontend stores session/token state.
-7. The frontend sends Bearer tokens to backend APIs.
-8. Backend APIs validate JWT tokens issued by Keycloak.
-9. Access is granted or rejected based on token validity and roles.
-10. Future applications reuse the same authentication session through SSO.
+- [Authentication Overview](authentication-overview.md)
+- [Keycloak Architecture](keycloak-architecture.md)
+- [JWT Validation](jwt-validation.md)
 
 ---
 
 # Current Frontend OIDC Integration
 
-The current SpecPilot frontend integrates directly with Keycloak using OpenID Connect (OIDC).
+The SpecPilot frontend integrates directly with Keycloak using the OpenID Connect (OIDC) protocol.
 
-Current implemented capabilities:
+Current capabilities include:
 
 - Centralized login through Keycloak
-- Shared session handling
 - Automatic login redirection
-- Logout flow through the Identity Provider
-- Frontend route protection foundation
-- Session persistence across page reloads
-- Runtime token management through Keycloak client integration
+- Shared session handling
+- Logout through the Identity Provider
+- Frontend route protection
+- Session persistence
+- Runtime access token management
 
-The Angular frontend does not own authentication logic directly and delegates identity management entirely to the centralized Identity Provider.
+The Angular application never authenticates users directly.
 
-# Shared Authentication Boundaries
+Authentication is entirely delegated to the centralized Identity Provider.
 
-## Keycloak Responsibilities
+---
 
-- Authentication
+# Shared Authentication Responsibilities
+
+## Keycloak
+
+Responsible for:
+
+- User authentication
 - User credentials
 - Password policies
-- Sessions
-- Token issuing
+- Identity lifecycle
+- Session management
+- Token issuance
 - Role management
-- Identity management
-- Single Sign-On
+- Single Sign-On (SSO)
 
-## Frontend Responsibilities
+---
 
-- Login redirects
-- Session persistence
+## Angular Frontend
+
+Responsible for:
+
+- Login redirection
+- Logout
 - Route protection
-- Token attachment to API calls
-- Logout flow
-- OIDC session initialization
+- Access token forwarding
+- OIDC initialization
+- Session state
 
-## Frontend Token Storage Strategy
+The frontend never validates JWT tokens.
 
-The frontend does not implement custom token persistence in localStorage.
+---
 
-OIDC token lifecycle and session state are delegated to the Keycloak client integration. Tokens are consumed at runtime by the Angular application and will later be attached to backend API requests through an HTTP interceptor.
+## NestJS Backend
 
-This avoids introducing custom token storage logic at this stage and keeps the authentication flow aligned with the Identity Provider.
-
-## Backend Responsibilities
+Responsible for:
 
 - JWT validation
+- Authenticated user extraction
 - Authorization guards
 - Role extraction
 - Protected endpoint enforcement
-- Domain-specific authorization rules
+- Business authorization
 
-## Application Database Responsibilities
+Authentication is delegated to Keycloak.
 
-The application database remains responsible only for domain data such as:
+Authorization remains application-specific.
+
+---
+
+## Application Database
+
+The SpecPilot database stores only business information.
+
+Examples include:
 
 - Analysis history
-- AI usage tracking
-- Future application-specific data
+- Access requests
+- AI usage metadata
+- Future application data
 
-The database is not responsible for authentication state management.
-
----
-
-# JWT Validation Flow
-
-```text
-Frontend
-    ↓
-Bearer Access Token
-    ↓
-Backend API
-    ↓
-JWT Validation
-    ├── Signature validation
-    ├── Issuer validation
-    ├── Expiration validation
-    ├── Audience/client validation
-    └── Role extraction
-    ↓
-Authorized / Rejected
-```
+Authentication state is never persisted inside the application database.
 
 ---
 
-## Backend JWT Protection
+# Frontend Token Management
 
-The NestJS backend validates Keycloak-issued JWT access tokens using the realm issuer, JWKS public keys and the expected API audience.
+SpecPilot does not implement custom authentication storage.
 
-Protected endpoints require an `Authorization: Bearer <access_token>` header.
+Token lifecycle management is delegated entirely to the Keycloak JavaScript adapter.
 
-Current protected endpoints:
+The frontend retrieves access tokens at runtime and attaches them automatically to backend requests through the HTTP interceptor.
 
-- `POST /ai/analyze`
-- `GET /analysis`
-
-The backend extracts authenticated user metadata and roles from the token payload to prepare future RBAC support.
-
-# Ecosystem Roles Foundation
-
-SpecPilot AI introduces a lightweight Role-Based Access Control (RBAC) foundation to prepare the ecosystem for future multi-application authorization requirements.
-
-At the current stage, roles are extracted and normalized by the backend, but route-level role restrictions are intentionally kept minimal to avoid premature complexity.
+This approach avoids custom authentication logic while remaining aligned with the OpenID Connect specification.
 
 ---
 
-## Initial Roles
+# Ecosystem Role Foundation
 
-The ecosystem currently defines the following application roles:
+The current authorization model introduces a lightweight RBAC foundation.
+
+Current application roles:
 
 ```text
 specpilot_user
 specpilot_admin
 ```
 
-### specpilot_user
+Roles are extracted from validated access tokens and normalized before reaching the application layer.
 
-Represents a standard authenticated user of the SpecPilot application.
-
-Current responsibilities:
-
-- Access protected SpecPilot functionality
-- Generate AI analyses
-- Access authenticated application features
-- Access personal analysis history
-
-### specpilot_admin
-
-Represents a future administrative role within the SpecPilot ecosystem.
-
-Potential future responsibilities:
-
-- Platform administration
-- Usage monitoring
-- Operational oversight
-- Administrative endpoints
-
-At the current stage, this role is documented and extracted from tokens but is not yet enforced through dedicated authorization rules.
+Route-level authorization remains intentionally lightweight while the platform evolves.
 
 ---
 
-## Application Access Strategy
-
-Authentication and authorization responsibilities remain separated.
-
-Authentication is delegated to Keycloak through OpenID Connect (OIDC).
-
-Authorization decisions remain the responsibility of each application backend.
-
-This approach allows future applications to:
-
-- Share authentication
-- Reuse user sessions
-- Implement independent authorization rules
-- Maintain application-specific access boundaries
-
-Applications authenticate users through the shared Identity Provider while retaining control over their own domain-specific authorization requirements.
-
----
-
-## Role Sources
-
-Roles may be provided by Keycloak through:
-
-- Realm roles
-- Client roles
+# Role Sources
 
 The backend currently supports extracting roles from:
 
@@ -356,57 +136,56 @@ realm_access.roles
 resource_access.{client}.roles
 ```
 
-Only roles explicitly recognized by the SpecPilot ecosystem are considered application roles.
+Only roles explicitly recognized by the ecosystem are accepted.
 
-This prevents internal Keycloak roles from becoming part of application-level authorization decisions.
+Unknown Keycloak roles are ignored.
 
 ---
 
-## Backend Role Extraction
+# Authenticated User Contract
 
-The backend normalizes authenticated users through the JWT validation layer.
-
-Authenticated requests expose a normalized user object containing:
+After successful JWT validation, the backend exposes a normalized authenticated user.
 
 ```ts
 {
   sub: string;
-  email?: string;
+  email: string;
+  name?: string;
   username?: string;
   roles: EcosystemRole[];
 }
 ```
 
-This allows application services and controllers to work with a stable user contract instead of directly consuming raw JWT payloads.
+Application services never consume the raw JWT payload directly.
 
 ---
 
-## Current Authorization Scope
+# Current Authorization Scope
 
-The current implementation provides:
+The authentication layer currently provides:
 
-- JWT signature validation
+- JWT validation
 - Issuer validation
 - Audience validation
 - Authenticated user extraction
-- Role extraction and normalization
+- Role normalization
 
-The current implementation does not yet include:
+The current implementation intentionally does not yet include:
 
-- Route-level role restrictions
-- Dedicated admin-only endpoints
 - Fine-grained permissions
-- Permission-based access control
+- Permission-based authorization
+- Role hierarchy
+- Administrative policies
 
-These capabilities will be introduced only when required by future ecosystem growth.
+These capabilities will be introduced only when required by future business requirements.
 
 ---
 
-## Future RBAC Evolution
+# Future RBAC Evolution
 
-The current foundation has been designed to support future authorization requirements across multiple applications.
+The current RBAC foundation has been designed to evolve gradually.
 
-Potential future roles may include:
+Potential future roles include:
 
 ```text
 ecosystem_admin
@@ -418,172 +197,17 @@ specpilot_manager
 Future enhancements may include:
 
 - Role-based route guards
-- Application-specific administrative areas
+- Administrative dashboards
 - Shared ecosystem administration
-- Permission-based authorization if required
+- Permission-based authorization
 
-The architecture intentionally evolves from authentication, to role extraction, to role enforcement, and finally to more advanced authorization models only when justified by business requirements.
-
-```
-
-```
-
-# Future Ecosystem Expansion
-
-Future applications should only require:
-
-- OIDC client configuration
-- Shared realm integration
-- JWT validation
-- Frontend route protection
-
-This allows future applications to integrate authentication independently of their technology stack.
-
-Planned compatible stacks include:
-
-- Angular
-- Vue
-- React
-- NestJS
-- Spring Boot
-- FastAPI
+The architecture intentionally evolves from authentication, to role extraction, to role enforcement, only when business requirements justify additional complexity.
 
 ---
 
-# Long-Term Vision
+# Related Documentation
 
-The long-term goal is to evolve the portfolio ecosystem into a multi-application architecture demonstrating:
-
-- Shared authentication
-- Centralized identity management
-- Enterprise-oriented access control
-- Cross-stack interoperability
-- Modern API security practices
-- Modular application boundaries
-- Scalable authentication architecture
-
-# Current Keycloak Deployment
-
-The current SpecPilot platform deploys Keycloak as an independent service within the Docker Compose stack.
-
-Keycloak is responsible for:
-
-- User authentication
-- JWT issuance
-- Role management
-- Session management
-- OpenID Connect (OIDC) integration
-
-## Current Realm Structure
-
-Realm:
-
-```text
-specpilot
-```
-
-Clients:
-
-```text
-specpilot-frontend
-specpilot-api
-```
-
-Client roles:
-
-```text
-specpilot_user
-specpilot_admin
-```
-
-## Realm Configuration
-
-The current realm configuration is versioned in:
-
-```text
-infrastructure/keycloak/specpilot-realm.json
-```
-
-This configuration allows the authentication infrastructure to be recreated consistently across environments.
-
-## User Management
-
-Application users are managed manually through the Keycloak Administration Console.
-
-User credentials are not stored in the repository and are not included in realm configuration files.
-
-## Current Validation Status
-
-The following authentication validations have been successfully completed:
-
-- Keycloak deployment through Docker Compose
-- Realm creation
-- Client configuration
-- Client role configuration
-- Frontend login flow
-- JWT issuance
-- Backend JWT validation
-- Protected endpoint access
-
-```
-
-```
-
-# Local Development Setup
-
-## Docker Infrastructure
-
-The local development environment currently includes:
-
-- PostgreSQL
-- Keycloak
-
-Run local infrastructure:
-
-```bash
-docker compose up -d
-```
-
----
-
-## Local Services
-
-### PostgreSQL
-
-```text
-localhost:5432
-```
-
-### Keycloak
-
-```text
-http://localhost:8080
-```
-
----
-
-## Keycloak Administration
-
-Administrator credentials are provided through environment variables and must not be hardcoded in documentation.
-
-Current variables:
-
-````text
-KEYCLOAK_ADMIN_USERNAME
-KEYCLOAK_ADMIN_PASSWORD
----
-
-## Current Realm
-
-```text
-specpilot
-````
-
----
-
-## Initial Clients
-
-```text
-specpilot-frontend
-specpilot-api
-```
+- [Authentication Overview](authentication-overview.md)
+- [Keycloak Architecture](keycloak-architecture.md)
+- [JWT Validation](jwt-validation.md)
+- [Environment Configuration](environment-configuration.md)

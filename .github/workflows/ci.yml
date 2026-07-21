@@ -16,8 +16,8 @@ jobs:
       OPENAI_API_KEY: fake-api-key
       OPENAI_MODEL: fake-model
       DATABASE_URL: postgresql://test:test@localhost:5432/testdb
-      KEYCLOAK_ISSUER_URL: http://localhost:8080/realms/specpilot
-      KEYCLOAK_JWKS_URI: http://localhost:8080/realms/specpilot/protocol/openid-connect/certs
+      KEYCLOAK_ISSUER_URL: http://localhost:8080/realms/ecosystem
+      KEYCLOAK_JWKS_URI: http://localhost:8080/realms/ecosystem/protocol/openid-connect/certs
       KEYCLOAK_CLIENT_ID: specpilot-api
       CORS_ALLOWED_ORIGINS: http://localhost:4200
 

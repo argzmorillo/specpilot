@@ -26,4 +26,22 @@ export class AuthService {
   getToken(): string | undefined {
     return this.keycloak.token;
   }
+
+  hasRole(role: string): boolean {
+    const realmRoles = this.keycloak.tokenParsed?.['realm_access']?.['roles'] as
+      | string[]
+      | undefined;
+
+    const resourceAccess = this.keycloak.tokenParsed?.['resource_access'] as
+      | Record<string, { roles?: string[] }>
+      | undefined;
+
+    const clientRoles = resourceAccess?.['specpilot-api']?.roles ?? [];
+
+    return [...(realmRoles ?? []), ...clientRoles].includes(role);
+  }
+
+  hasAccess(): boolean {
+    return this.hasRole('specpilot_user');
+  }
 }

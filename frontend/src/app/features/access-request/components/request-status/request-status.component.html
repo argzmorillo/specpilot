@@ -1,0 +1,50 @@
+<section
+  class="rounded-3xl border bg-white p-6 text-center shadow-sm lg:p-10"
+  [class]="presentation().borderClass"
+>
+  <div
+    class="mx-auto flex h-14 w-14 items-center justify-center rounded-full"
+    [class]="presentation().iconClass"
+  >
+    <lucide-icon [img]="presentation().icon" [size]="28" aria-hidden="true" />
+  </div>
+
+  <span
+    class="mt-5 inline-flex rounded-full px-3 py-1 text-xs font-semibold"
+    [class]="presentation().badgeClass"
+  >
+    {{ presentation().badge }}
+  </span>
+
+  <h2 class="mt-4 text-2xl font-semibold tracking-tight text-slate-900">
+    {{ presentation().title }}
+  </h2>
+
+  <p class="mx-auto mt-3 max-w-xl text-sm leading-6 text-slate-500">
+    {{ presentation().description }}
+  </p>
+
+  @if (message()) {
+    <div class="mt-6 w-full rounded-2xl border border-slate-200 bg-slate-50 p-5 text-left">
+      <p class="text-xs font-semibold uppercase tracking-[0.2em] text-slate-500">Tu mensaje</p>
+
+      <p
+        class="mt-4 max-w-full whitespace-pre-wrap break-words text-sm leading-6 text-slate-700 [overflow-wrap:anywhere]"
+      >
+        {{ message() }}
+      </p>
+    </div>
+  }
+
+  @if (status() === 'REJECTED' && adminNotes()) {
+    <div class="mx-auto mt-4 max-w-2xl rounded-2xl border border-blue-200 bg-blue-50 p-5 text-left">
+      <p class="text-xs font-semibold uppercase tracking-[0.16em] text-blue-700">
+        Información adicional
+      </p>
+
+      <p class="mt-2 whitespace-pre-wrap text-sm leading-6 text-blue-900">
+        {{ adminNotes() }}
+      </p>
+    </div>
+  }
+</section>
