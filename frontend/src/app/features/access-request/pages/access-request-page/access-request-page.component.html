@@ -1,217 +1,187 @@
-<div>
-  <app-mobile-header [menuIcon]="menuIcon" (openMenu)="openMobileMenu()" />
+<div class="mx-auto max-w-5xl">
+  <header class="mb-6">
+    <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900 lg:text-4xl">
+      Solicitar acceso
+    </h1>
 
-  <!-- Desktop sidebar -->
-  <div class="hidden lg:fixed lg:left-0 lg:top-0 lg:block lg:h-screen lg:w-[260px]">
-    <app-sidebar
-      [showAnalysisNavigation]="false"
-      [username]="username()"
-      [userInitial]="userInitial()"
-    />
-  </div>
+    <p class="mt-3 max-w-3xl text-base leading-relaxed text-slate-500">
+      Cuéntanos brevemente cómo planeas utilizar SpecPilot AI.
+    </p>
+  </header>
 
-  <!-- Mobile sidebar -->
-  @if (mobileMenuOpen()) {
-    <div class="fixed inset-0 z-50 lg:hidden">
-      <app-sidebar
-        class="block h-full"
-        [showAnalysisNavigation]="false"
-        [isMobile]="true"
-        [closeIcon]="closeIcon"
-        [username]="username()"
-        [userInitial]="userInitial()"
-        (closeMenu)="closeMobileMenu()"
-      />
-    </div>
+  <!-- Initial request lookup -->
+  @if (state() === 'loading') {
+    <section
+      class="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm"
+      aria-live="polite"
+    >
+      <div
+        class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600"
+      ></div>
+
+      <h2 class="mt-5 text-lg font-semibold text-slate-900">Comprobando tu solicitud</h2>
+
+      <p class="mt-2 text-sm text-slate-500">Estamos consultando el estado de tu acceso.</p>
+    </section>
   }
 
-  <main class="min-h-screen p-5 lg:ml-[260px] lg:p-10">
-    <div class="mx-auto max-w-5xl">
-      <header class="mb-6">
-        <h1 class="mt-2 text-3xl font-bold tracking-tight text-slate-900 lg:text-4xl">
-          Solicitar acceso
-        </h1>
-
-        <p class="mt-3 max-w-3xl text-base leading-relaxed text-slate-500">
-          Cuéntanos brevemente cómo planeas utilizar SpecPilot AI.
-        </p>
-      </header>
-
-      <!-- Initial request lookup -->
-      @if (state() === 'loading') {
-        <section
-          class="rounded-3xl border border-slate-200 bg-white p-10 text-center shadow-sm"
-          aria-live="polite"
+  <!-- Request form -->
+  @if (state() === 'form' || state() === 'submitting') {
+    <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm lg:p-8">
+      <div class="flex items-center gap-4">
+        <div
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-violet-500 text-white"
         >
-          <div
-            class="mx-auto h-10 w-10 animate-spin rounded-full border-4 border-slate-200 border-t-blue-600"
-          ></div>
+          <lucide-icon [img]="userIcon" [size]="22" aria-hidden="true" />
+        </div>
 
-          <h2 class="mt-5 text-lg font-semibold text-slate-900">Comprobando tu solicitud</h2>
+        <div>
+          <h2 class="text-lg font-semibold text-slate-900">Información de la solicitud</h2>
 
-          <p class="mt-2 text-sm text-slate-500">Estamos consultando el estado de tu acceso.</p>
-        </section>
-      }
-
-      <!-- Request form -->
-      @if (state() === 'form' || state() === 'submitting') {
-        <section class="rounded-3xl border border-slate-200 bg-white p-5 shadow-sm lg:p-8">
-          <div class="flex items-center gap-4">
-            <div
-              class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-violet-500 text-white"
-            >
-              <lucide-icon [img]="userIcon" [size]="22" aria-hidden="true" />
-            </div>
-
-            <div>
-              <h2 class="text-lg font-semibold text-slate-900">Información de la solicitud</h2>
-
-              <p class="mt-1 text-sm text-slate-500">
-                El mensaje es opcional, pero puede ayudarnos a valorar tu solicitud.
-              </p>
-            </div>
-          </div>
-
-          <form class="mt-6" (ngSubmit)="submit()">
-            <div class="flex items-center justify-between gap-4">
-              <label for="access-message" class="text-sm font-medium text-slate-900">
-                Mensaje
-                <span class="font-normal text-slate-500"> (opcional) </span>
-              </label>
-
-              <span
-                class="text-xs"
-                [class.text-red-600]="messageControl.invalid"
-                [class.text-slate-500]="messageControl.valid"
-              >
-                {{ messageLength() }} / {{ maxMessageLength }}
-              </span>
-            </div>
-
-            <textarea
-              id="access-message"
-              rows="5"
-              [formControl]="messageControl"
-              [maxLength]="maxMessageLength"
-              [readOnly]="submitting()"
-              placeholder="Cuéntanos cuál será tu rol, cómo planeas utilizar SpecPilot AI o cualquier información relevante..."
-              class="mt-3 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm leading-6 text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-70"
-            ></textarea>
-
-            @if (messageControl.touched && messageControl.hasError('maxlength')) {
-              <p class="mt-2 text-sm text-red-600">
-                El mensaje no puede superar los
-                {{ maxMessageLength }} caracteres.
-              </p>
-            }
-
-            @if (error()) {
-              <div
-                class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
-                role="alert"
-              >
-                {{ error() }}
-              </div>
-            }
-
-            <div class="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-              <div class="flex max-w-xl items-start gap-2 text-sm text-slate-500">
-                <lucide-icon
-                  class="mt-0.5 shrink-0 text-blue-600"
-                  [img]="infoIcon"
-                  [size]="17"
-                  aria-hidden="true"
-                />
-
-                <p>Revisaremos manualmente tu solicitud y actualizaremos su estado.</p>
-              </div>
-
-              <app-button
-                variant="primary"
-                [icon]="sendIcon"
-                [disabled]="messageControl.invalid || submitting()"
-                (clicked)="submit()"
-              >
-                @if (submitting()) {
-                  Enviando solicitud...
-                } @else {
-                  Enviar solicitud
-                }
-              </app-button>
-            </div>
-          </form>
-
-          <div class="mt-6 grid gap-4 border-t border-slate-200 pt-5 sm:grid-cols-3">
-            <article class="flex items-start gap-3">
-              <span
-                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-100 text-sm font-semibold text-violet-700"
-              >
-                1
-              </span>
-
-              <div>
-                <h3 class="text-sm font-semibold text-slate-900">Revisamos</h3>
-
-                <p class="mt-1 text-xs leading-5 text-slate-500">Evaluamos la solicitud.</p>
-              </div>
-            </article>
-
-            <article class="flex items-start gap-3">
-              <span
-                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700"
-              >
-                2
-              </span>
-
-              <div>
-                <h3 class="text-sm font-semibold text-slate-900">Actualizamos</h3>
-
-                <p class="mt-1 text-xs leading-5 text-slate-500">Podrás consultar su estado.</p>
-              </div>
-            </article>
-
-            <article class="flex items-start gap-3">
-              <span
-                class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-700"
-              >
-                3
-              </span>
-
-              <div>
-                <h3 class="text-sm font-semibold text-slate-900">Acceso concedido</h3>
-
-                <p class="mt-1 text-xs leading-5 text-slate-500">Podrás utilizar la aplicación.</p>
-              </div>
-            </article>
-          </div>
-        </section>
-      }
-
-      <!-- Pending or rejected request -->
-      @if (state() === 'status' && request() && visibleRequestStatus()) {
-        <app-request-status
-          [status]="visibleRequestStatus()!"
-          [message]="request()!.message"
-          [adminNotes]="request()!.adminNotes"
-        />
-      }
-
-      <!-- Loading error -->
-      @if (state() === 'error') {
-        <section class="rounded-3xl border border-red-200 bg-white p-8 text-center shadow-sm">
-          <h2 class="text-xl font-semibold text-slate-900">No se ha podido cargar la solicitud</h2>
-
-          <p class="mt-3 text-sm text-slate-500">
-            {{ error() }}
+          <p class="mt-1 text-sm text-slate-500">
+            El mensaje es opcional, pero puede ayudarnos a valorar tu solicitud.
           </p>
+        </div>
+      </div>
 
-          <div class="mt-6 flex justify-center">
-            <app-button variant="primary" [icon]="retryIcon" (clicked)="retry()">
-              Reintentar
-            </app-button>
+      <form class="mt-6" (ngSubmit)="submit()">
+        <div class="flex items-center justify-between gap-4">
+          <label for="access-message" class="text-sm font-medium text-slate-900">
+            Mensaje
+            <span class="font-normal text-slate-500"> (opcional) </span>
+          </label>
+
+          <span
+            class="text-xs"
+            [class.text-red-600]="messageControl.invalid"
+            [class.text-slate-500]="messageControl.valid"
+          >
+            {{ messageLength() }} / {{ maxMessageLength }}
+          </span>
+        </div>
+
+        <textarea
+          id="access-message"
+          rows="5"
+          [formControl]="messageControl"
+          [maxLength]="maxMessageLength"
+          [readOnly]="submitting()"
+          placeholder="Cuéntanos cuál será tu rol, cómo planeas utilizar SpecPilot AI o cualquier información relevante..."
+          class="mt-3 w-full resize-none rounded-2xl border border-slate-200 bg-slate-50 p-5 text-sm leading-6 text-slate-700 outline-none transition focus:border-blue-500 focus:bg-white disabled:cursor-not-allowed disabled:opacity-70"
+        ></textarea>
+
+        @if (messageControl.touched && messageControl.hasError('maxlength')) {
+          <p class="mt-2 text-sm text-red-600">
+            El mensaje no puede superar los
+            {{ maxMessageLength }} caracteres.
+          </p>
+        }
+
+        @if (error()) {
+          <div
+            class="mt-4 rounded-2xl border border-red-200 bg-red-50 p-4 text-sm text-red-700"
+            role="alert"
+          >
+            {{ error() }}
           </div>
-        </section>
-      }
-    </div>
-  </main>
+        }
+
+        <div class="mt-5 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+          <div class="flex max-w-xl items-start gap-2 text-sm text-slate-500">
+            <lucide-icon
+              class="mt-0.5 shrink-0 text-blue-600"
+              [img]="infoIcon"
+              [size]="17"
+              aria-hidden="true"
+            />
+
+            <p>Revisaremos manualmente tu solicitud y actualizaremos su estado.</p>
+          </div>
+
+          <app-button
+            variant="primary"
+            [icon]="sendIcon"
+            [disabled]="messageControl.invalid || submitting()"
+            (clicked)="submit()"
+          >
+            @if (submitting()) {
+              Enviando solicitud...
+            } @else {
+              Enviar solicitud
+            }
+          </app-button>
+        </div>
+      </form>
+
+      <div class="mt-6 grid gap-4 border-t border-slate-200 pt-5 sm:grid-cols-3">
+        <article class="flex items-start gap-3">
+          <span
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-violet-100 text-sm font-semibold text-violet-700"
+          >
+            1
+          </span>
+
+          <div>
+            <h3 class="text-sm font-semibold text-slate-900">Revisamos</h3>
+
+            <p class="mt-1 text-xs leading-5 text-slate-500">Evaluamos la solicitud.</p>
+          </div>
+        </article>
+
+        <article class="flex items-start gap-3">
+          <span
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-blue-100 text-sm font-semibold text-blue-700"
+          >
+            2
+          </span>
+
+          <div>
+            <h3 class="text-sm font-semibold text-slate-900">Actualizamos</h3>
+
+            <p class="mt-1 text-xs leading-5 text-slate-500">Podrás consultar su estado.</p>
+          </div>
+        </article>
+
+        <article class="flex items-start gap-3">
+          <span
+            class="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-emerald-100 text-sm font-semibold text-emerald-700"
+          >
+            3
+          </span>
+
+          <div>
+            <h3 class="text-sm font-semibold text-slate-900">Acceso concedido</h3>
+
+            <p class="mt-1 text-xs leading-5 text-slate-500">Podrás utilizar la aplicación.</p>
+          </div>
+        </article>
+      </div>
+    </section>
+  }
+
+  <!-- Pending or rejected request -->
+  @if (state() === 'status' && request() && visibleRequestStatus()) {
+    <app-request-status
+      [status]="visibleRequestStatus()!"
+      [message]="request()!.message"
+      [adminNotes]="request()!.adminNotes"
+    />
+  }
+
+  <!-- Loading error -->
+  @if (state() === 'error') {
+    <section class="rounded-3xl border border-red-200 bg-white p-8 text-center shadow-sm">
+      <h2 class="text-xl font-semibold text-slate-900">No se ha podido cargar la solicitud</h2>
+
+      <p class="mt-3 text-sm text-slate-500">
+        {{ error() }}
+      </p>
+
+      <div class="mt-6 flex justify-center">
+        <app-button variant="primary" [icon]="retryIcon" (clicked)="retry()">
+          Reintentar
+        </app-button>
+      </div>
+    </section>
+  }
 </div>

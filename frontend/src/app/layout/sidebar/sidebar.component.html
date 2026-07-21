@@ -1,0 +1,54 @@
+<aside class="flex h-full flex-col justify-between bg-[#081220] px-6 py-8 text-white shadow-2xl">
+  <div class="min-h-0">
+    <div class="mb-12 flex items-center justify-between gap-3">
+      <div class="flex min-w-0 items-center gap-3">
+        <div
+          class="flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-gradient-to-br from-blue-500 to-violet-500 text-lg font-bold"
+        >
+          ◆
+        </div>
+
+        <p class="truncate text-xl font-semibold">SpecPilot AI</p>
+      </div>
+
+      @if (isMobile() && closeIcon()) {
+        <button
+          type="button"
+          class="shrink-0 rounded-xl border border-white/10 bg-white/5 p-2 text-white transition hover:bg-white/10"
+          aria-label="Cerrar menú"
+          (click)="onCloseMenu()"
+        >
+          <lucide-icon [img]="closeIcon()!" class="h-5 w-5" />
+        </button>
+      }
+    </div>
+
+    <ng-content />
+  </div>
+
+  <div class="border-t border-white/10 pt-5">
+    <div class="mb-4 flex items-center gap-3">
+      <div
+        class="flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-blue-500 to-violet-500 text-sm font-semibold text-white"
+      >
+        {{ userInitial() }}
+      </div>
+
+      <div class="min-w-0">
+        <p class="truncate text-sm font-medium text-white">
+          {{ username() }}
+        </p>
+
+        <p class="text-xs text-slate-400">Sesión activa</p>
+      </div>
+    </div>
+
+    <button
+      type="button"
+      class="w-full rounded-xl border border-white/10 bg-white/5 px-4 py-3 text-left text-sm font-medium text-slate-200 transition hover:bg-white/10"
+      (click)="onLogout()"
+    >
+      Cerrar sesión
+    </button>
+  </div>
+</aside>
