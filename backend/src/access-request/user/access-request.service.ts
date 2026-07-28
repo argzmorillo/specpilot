@@ -1,7 +1,7 @@
 import { ConflictException, Injectable } from '@nestjs/common';
 import { CreateAccessRequestDto } from './dto/create-access-request.dto';
-import { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
-import { AccessRequestRepository } from './access-request.repository';
+import { AuthenticatedUser } from '../../auth/interfaces/authenticated-user.interface';
+import { AccessRequestRepository } from '../access-request.repository';
 import { AccessRequest, AccessRequestStatus, RequestedApplication } from '@prisma/client';
 
 @Injectable()

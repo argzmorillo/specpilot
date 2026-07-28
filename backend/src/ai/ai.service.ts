@@ -3,6 +3,7 @@ import { ConfigService } from '@nestjs/config';
 import openAIClient from 'openai';
 import { AnalyzeResult } from './interfaces/analyze-result.interface';
 import { AnalysisRepository } from '../analysis/analysis.repository';
+import { AuthenticatedUser } from '../auth/interfaces/authenticated-user.interface';
 
 @Injectable()
 export class AiService {
@@ -55,7 +56,7 @@ export class AiService {
     });
   }
 
-  async analyzeText(text: string): Promise<AnalyzeResult> {
+  async analyzeText(text: string, user: AuthenticatedUser): Promise<AnalyzeResult> {
     const startedAt = Date.now();
     try {
       const response = await this.openai.responses.create({
@@ -70,6 +71,11 @@ export class AiService {
             content: text,
           },
         ],
+        text: {
+          format: {
+            type: 'json_object',
+          },
+        },
         store: true,
       });
 
@@ -78,6 +84,7 @@ export class AiService {
       const result = this.parseAnalyzeResult(response.output_text);
 
       await this.analysisRepository.create({
+        keycloakUserId: user.sub,
         inputText: text,
         ...result,
         requestDurationMs,

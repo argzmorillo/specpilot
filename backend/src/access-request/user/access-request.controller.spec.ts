@@ -3,7 +3,7 @@ import type { TestingModule } from '@nestjs/testing';
 import { AccessRequestStatus, RequestedApplication } from '@prisma/client';
 import { AccessRequestController } from './access-request.controller';
 import { AccessRequestService } from './access-request.service';
-import { EcosystemRole } from '../auth/roles/ecosystem-role.enum';
+import { EcosystemRole } from '../../auth/roles/ecosystem-role.enum';
 
 describe('AccessRequestController', () => {
   let controller: AccessRequestController;

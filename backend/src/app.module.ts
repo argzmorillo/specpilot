@@ -20,7 +20,6 @@ import { AccessRequestModule } from './access-request/access-request.module';
     AuthModule,
     HealthModule,
     AccessRequestModule,
-    AccessRequestModule,
   ],
   controllers: [AppController],
   providers: [AppService],

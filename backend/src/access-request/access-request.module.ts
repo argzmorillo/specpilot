@@ -1,10 +1,16 @@
 import { Module } from '@nestjs/common';
-import { AccessRequestController } from './access-request.controller';
-import { AccessRequestService } from './access-request.service';
+
+import { AuthModule } from '../auth/auth.module';
+
 import { AccessRequestRepository } from './access-request.repository';
+import { AccessRequestService } from './user/access-request.service';
+import { AccessRequestAdminController } from './admin/access-request-admin.controller';
+import { AccessRequestAdminService } from './admin/access-request-admin.service';
+import { AccessRequestController } from './user/access-request.controller';
 
 @Module({
-  controllers: [AccessRequestController],
-  providers: [AccessRequestService, AccessRequestRepository],
+  imports: [AuthModule],
+  controllers: [AccessRequestController, AccessRequestAdminController],
+  providers: [AccessRequestService, AccessRequestAdminService, AccessRequestRepository],
 })
 export class AccessRequestModule {}

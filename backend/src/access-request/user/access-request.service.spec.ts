@@ -2,9 +2,9 @@ import { ConflictException } from '@nestjs/common';
 import type { TestingModule } from '@nestjs/testing';
 import { Test } from '@nestjs/testing';
 import { AccessRequestStatus, RequestedApplication } from '@prisma/client';
-import { AccessRequestRepository } from './access-request.repository';
+import { AccessRequestRepository } from '../access-request.repository';
 import { AccessRequestService } from './access-request.service';
-import { EcosystemRole } from '../auth/roles/ecosystem-role.enum';
+import { EcosystemRole } from '../../auth/roles/ecosystem-role.enum';
 
 describe('AccessRequestService', () => {
   let service: AccessRequestService;

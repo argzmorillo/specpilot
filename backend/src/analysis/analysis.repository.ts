@@ -28,4 +28,15 @@ export class AnalysisRepository {
       },
     });
   }
+
+  findAllByUser(keycloakUserId: string) {
+    return this.prisma.analysis.findMany({
+      where: {
+        keycloakUserId,
+      },
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+  }
 }

@@ -1,10 +1,10 @@
 import { Body, Controller, Get, Post, UseGuards } from '@nestjs/common';
 import { AccessRequest } from '@prisma/client';
-import { JwtAuthGuard } from '../auth/jwt-auth.guard';
+import { CurrentUser } from '../../auth/decorators/current-user.decorator';
+import { JwtAuthGuard } from '../../auth/jwt-auth.guard';
 import { AccessRequestService } from './access-request.service';
 import { CreateAccessRequestDto } from './dto/create-access-request.dto';
-import { CurrentUser } from '../auth/decorators/current-user.decorator';
-import * as authenticatedUserInterface from '../auth/interfaces/authenticated-user.interface';
+import * as authenticatedUserInterface from '../../auth/interfaces/authenticated-user.interface';
 
 @Controller('access-requests')
 @UseGuards(JwtAuthGuard)
